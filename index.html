@@ -1,1300 +1,847 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Essay Center - Order Management</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #1e88e5;
-            --primary-light: #e3f2fd;
-            --secondary: #f5f5f5;
-            --accent: #ff9800;
-            --text: #333333;
-            --text-light: #757575;
-            --border: #e0e0e0;
-            --success: #4caf50;
-            --warning: #ffc107;
-            --danger: #f44336;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            display: flex;
-            background-color: #f9f9f9;
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 250px;
-            background: white;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-
-        .logo {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo h1 {
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-left: 10px;
-        }
-
-        .logo i {
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .nav-links {
-            flex: 1;
-            padding: 20px 0;
-        }
-
-        .nav-links li {
-            list-style: none;
-            margin-bottom: 5px;
-        }
-
-        .nav-links a {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            text-decoration: none;
-            color: var(--text);
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
-            border-left: 4px solid var(--primary);
-        }
-
-        .nav-links i {
-            margin-right: 15px;
-            font-size: 1.2rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .add-order-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px auto;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .add-order-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
-            z-index: 99;
-        }
-
-        .top-nav-stats {
-            display: flex;
-            gap: 20px;
-        }
-
-        .wallet-balance, .amount-earned {
-            display: flex;
-            align-items: center;
-            background: var(--primary-light);
-            padding: 10px 20px;
-            border-radius: 30px;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .wallet-balance i, .amount-earned i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            background: white;
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            display: none;
-            z-index: 100;
-        }
-
-        .profile:hover .profile-dropdown {
-            display: block;
-        }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .profile-info .profile-img {
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-        }
-
-        .profile-details {
-            margin-left: 15px;
-        }
-
-        .profile-details h3 {
-            margin-bottom: 5px;
-        }
-
-        .profile-details p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        /* Content Area */
-        .content {
-            padding: 30px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .page-title {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title h2 {
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .in-progress .stat-icon { background: var(--primary); }
-        .in-review .stat-icon { background: var(--warning); }
-        .completed .stat-icon { background: var(--success); }
-        .cancelled .stat-icon { background: var(--danger); }
-
-        .stat-info h3 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .stat-info p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .orders-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .orders-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .orders-header h3 {
-            color: var(--primary);
-        }
-
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .orders-table th {
-            text-align: left;
-            padding: 15px 20px;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .orders-table td {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .order-title {
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .order-title:hover {
-            color: #1565c0;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-in-progress { background: var(--primary-light); color: var(--primary); }
-        .status-in-review { background: #fff8e1; color: #ff8f00; }
-        .status-completed { background: #e8f5e9; color: var(--success); }
-        .status-cancelled { background: #ffebee; color: var(--danger); }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--primary);
-            margin-right: 10px;
-            font-size: 1rem;
-        }
-
-        .action-btn.delete {
-            color: var(--danger);
-        }
-
-        .status-select {
-            padding: 5px 10px;
-            border-radius: 5px;
-            border: 1px solid var(--border);
-            background: white;
-            color: var(--text);
-        }
-
-        /* Order Details Modal */
-        .order-details-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .order-details-content {
-            background: white;
-            width: 90%;
-            max-width: 1000px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: flex;
-            max-height: 90vh;
-        }
-
-        .order-instructions {
-            flex: 2;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .order-info {
-            flex: 1;
-            background: var(--primary-light);
-            padding: 30px;
-            border-left: 1px solid var(--border);
-        }
-
-        .order-info h3 {
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-
-        .info-item {
-            margin-bottom: 15px;
-        }
-
-        .info-item label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-
-        .info-item p {
-            color: var(--text-light);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            padding: 20px;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            font-weight: 500;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1565c0;
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 80px;
-            }
-            
-            .logo h1, .nav-links span {
-                display: none;
-            }
-            
-            .nav-links a {
-                justify-content: center;
-                padding: 15px;
-            }
-            
-            .nav-links i {
-                margin-right: 0;
-            }
-            
-            .order-details-content {
-                flex-direction: column;
-            }
-            
-            .order-info {
-                border-left: none;
-                border-top: 1px solid var(--border);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .orders-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .top-nav-stats {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Essay Center — Order Manager</title>
+
+  <!-- Font Awesome for icons (optional) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --accent: #58a6ff;   /* light blue */
+      --accent-2: #cfe9ff;
+      --muted: #6b7280;
+      --card: #f8fbff;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --glass: rgba(255,255,255,0.6);
+      --radius: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: linear-gradient(180deg, #f6fbff 0%, #ffffff 100%);
+      color:#111827;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height:100vh;
+      gap:20px;
+      padding:20px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background: linear-gradient(180deg,var(--card),#fff);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow: 0 6px 18px rgba(14,30,37,0.06);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height: calc(100vh - 40px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo {
+      width:44px;height:44px;border-radius:10px;background:var(--accent);
+      display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;
+      box-shadow:0 4px 10px rgba(88,166,255,0.25);
+    }
+    .brand h2{margin:0;font-size:1.05rem}
+    .brand p{margin:0;font-size:0.85rem;color:var(--muted)}
+
+    .nav {
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding-top:8px;
+    }
+    .nav button{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      border-radius:10px;
+      background:transparent;
+      border: none;
+      cursor:pointer;
+      font-size:0.95rem;
+      color: #0f172a;
+      text-align:left;
+    }
+    .nav button .count{
+      margin-left:auto;
+      background:var(--accent-2);
+      color:var(--accent);
+      padding:4px 8px;border-radius:999px;font-weight:600;font-size:0.8rem;
+    }
+    .nav button.active{
+      background: linear-gradient(90deg,var(--accent-2),rgba(207,233,255,0.4));
+      box-shadow: inset 0 0 0 1px rgba(88,166,255,0.08);
+      color: #03396c;
+    }
+
+    .create-btn{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:10px 12px;
+      border-radius:10px;
+      background:var(--accent);
+      color:white;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow: 0 6px 16px rgba(88,166,255,0.18);
+    }
+
+    /* Main content */
+    .main {
+      display:flex;flex-direction:column;
+      gap:16px;
+      min-height: calc(100vh - 40px);
+    }
+
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      background:transparent;padding:6px 12px;
+    }
+    .wallet{
+      display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),#eef9ff);
+      box-shadow:0 4px 10px rgba(88,166,255,0.06);
+    }
+    .wallet .label{font-size:0.85rem;color:var(--muted)}
+    .wallet .amount{font-weight:700;font-size:1rem;color:#032b47}
+
+    .profile{
+      display:flex;align-items:center;gap:10px;position:relative;
+    }
+    .profile .avatar{
+      width:42px;height:42px;border-radius:999px;background:linear-gradient(90deg,#9ad7ff,#5aaeff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+    }
+    .profile .name{font-size:0.9rem}
+
+    .profile-menu{
+      position:absolute;right:0;top:56px;background:white;border-radius:10px;padding:12px;width:260px;box-shadow:0 10px 30px rgba(2,6,23,0.12);display:none;
+    }
+    .profile-menu.show{display:block}
+    .profile-menu .meta{display:flex;gap:12px;align-items:center}
+    .profile-menu .meta .avatar{width:56px;height:56px}
+    .profile-menu .meta .info .nm{font-weight:700}
+    .profile-menu .meta .info .sub{font-size:0.85rem;color:var(--muted)}
+
+    /* Body content area */
+    .content{
+      background:white;padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(14,30,37,0.05);flex:1;overflow:auto;
+    }
+
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;
+    }
+
+    /* Cards */
+    .card{
+      background:linear-gradient(180deg,#fff,#f9fbff);padding:14px;border-radius:10px;
+    }
+
+    /* Orders list */
+    .orders-list{display:flex;flex-direction:column;gap:10px}
+    .order{
+      display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfeff);box-shadow:0 4px 10px rgba(12,34,56,0.04);
+    }
+    .order .left{width:6px;border-radius:6px}
+    .order .body{flex:1}
+    .order h3{margin:0;font-size:1rem}
+    .order p{margin:6px 0;color:var(--muted);font-size:0.9rem}
+    .badge{
+      padding:6px 8px;border-radius:999px;font-weight:700;font-size:0.78rem;
+    }
+    .badge.in-progress{background:linear-gradient(90deg,#fff8eb,#fff3d6);color:#b45309}
+    .badge.in-review{background:linear-gradient(90deg,#eefbf8,#dff9f3);color:#0f766e}
+    .badge.completed{background:linear-gradient(90deg,#f0fdf4,#dff7ea);color:var(--success)}
+    .badge.cancelled{background:linear-gradient(90deg,#fff1f2,#ffdfe2);color:var(--danger)}
+    .badge.revision{background:linear-gradient(90deg,#f5f3ff,#efedff);color:#6d28d9}
+
+    .order .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
+    .order .meta .small{font-size:0.8rem;color:var(--muted)}
+
+    .order .actions{display:flex;gap:8px}
+    .tiny-btn{padding:8px 10px;border-radius:8px;border:none;background:var(--accent-2);cursor:pointer;font-weight:600}
+
+    /* Order management table */
+    table.orders-table{
+      width:100%;border-collapse:collapse;font-size:0.95rem;
+    }
+    table.orders-table th, table.orders-table td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left}
+    table.orders-table th{font-size:0.85rem;color:var(--muted);font-weight:700}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.35);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal-backdrop.show{display:flex}
+    .modal{width:100%;max-width:760px;background:white;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.25)}
+    .modal h3{margin:0 0 10px 0}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+    label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="email"], select, textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;background:#fbfeff;
+    }
+
+    .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid #e5eef9}
+    .btn.primary{background:var(--accent);color:white;box-shadow:0 10px 30px rgba(88,166,255,0.18)}
+    .btn.danger{background:var(--danger);color:white}
+
+    /* Footer note */
+    .muted{color:var(--muted);font-size:0.88rem}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .app{grid-template-columns: 1fr; padding:12px}
+      .sidebar{display:flex;flex-direction:row;overflow:auto;min-height:unset;padding:10px}
+      .nav{flex-direction:row;gap:8px}
+      .create-btn{padding:8px}
+      .main{margin-top:10px}
+    }
+  </style>
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="logo">
-            <i class="fas fa-pen-fancy"></i>
-            <h1>Essay Center</h1>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#" class="active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-            <li><a href="#" data-page="in-progress"><i class="fas fa-tasks"></i> <span>Orders in Progress</span></a></li>
-            <li><a href="#" data-page="in-review"><i class="fas fa-search"></i> <span>Orders in Review</span></a></li>
-            <li><a href="#" data-page="completed"><i class="fas fa-check-circle"></i> <span>Orders Completed</span></a></li>
-            <li><a href="#" data-page="cancelled"><i class="fas fa-times-circle"></i> <span>Cancelled</span></a></li>
-            <li><a href="#" data-page="all-orders"><i class="fas fa-list-alt"></i> <span>Order Management</span></a></li>
-        </ul>
-        <button class="add-order-btn" id="addOrderBtn">
-            <i class="fas fa-plus"></i>
-        </button>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <div class="top-nav-stats">
-                <div class="wallet-balance">
-                    <i class="fas fa-wallet"></i>
-                    <span>Wallet Balance: KSH <span id="walletAmount">12,500</span></span>
-                </div>
-                <div class="amount-earned">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>Amount Earned: KSH <span id="earnedAmount">42,800</span></span>
-                </div>
-            </div>
-            <div class="profile">
-                <div class="profile-img">JD</div>
-                <div class="profile-dropdown">
-                    <div class="profile-info">
-                        <div class="profile-img">JD</div>
-                        <div class="profile-details">
-                            <h3>John Doe</h3>
-                            <p>john.doe@essaycenter.com</p>
-                            <p>+254 712 345 678</p>
-                        </div>
-                    </div>
-                    <a href="#" class="btn btn-secondary" style="width: 100%; text-align: center;">Logout</a>
-                </div>
-            </div>
+  <div class="app" id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand" style="align-items:center">
+        <div class="logo">EC</div>
+        <div>
+          <h2>Essay Center</h2>
+          <p>Order management</p>
+        </div>
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="Main Navigation">
+        <button class="nav-item active" data-view="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard <span class="count" id="count-dashboard">0</span></button>
+        <button class="nav-item" data-view="inprogress"><i class="fa-solid fa-spinner"></i> Orders in Progress <span class="count" id="count-inprogress">0</span></button>
+        <button class="nav-item" data-view="inreview"><i class="fa-solid fa-user-check"></i> Orders in Review <span class="count" id="count-inreview">0</span></button>
+        <button class="nav-item" data-view="completed"><i class="fa-solid fa-check-circle"></i> Orders Completed <span class="count" id="count-completed">0</span></button>
+        <button class="nav-item" data-view="cancelled"><i class="fa-solid fa-xmark-circle"></i> Cancelled <span class="count" id="count-cancelled">0</span></button>
+
+        <button class="create-btn" id="openCreate"><i class="fa-solid fa-plus"></i> New Order</button>
+
+        <hr style="border:none;border-top:1px dashed #e6f2ff;margin:10px 0">
+
+        <button class="nav-item" data-view="orders"><i class="fa-solid fa-list"></i> Order Management <span class="count" id="count-all">0</span></button>
+      </nav>
+
+      <div style="margin-top:auto;padding-top:12px">
+        <p class="muted" style="font-size:0.85rem">Essay Center</p>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" role="main">
+      <div class="topbar">
+        <div class="wallet" title="Money in orders currently in review">
+          <div style="display:flex;flex-direction:column">
+            <div class="label">Wallet Balance (In Review)</div>
+            <div class="amount" id="walletAmount">KSH 0.00</div>
+          </div>
+          <div style="margin-left:12px"><i class="fa-solid fa-wallet" style="font-size:20px;color:var(--accent)"></i></div>
         </div>
 
-        <!-- Content Area -->
-        <div class="content">
-            <div class="page-title">
-                <h2 id="pageTitle">Dashboard</h2>
-                <div id="pageActions"></div>
+        <div class="profile" id="profileBtn" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <div class="avatar">A</div>
+          <div class="name">Absolom Ondara</div>
+          <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
+
+          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+            <div class="meta">
+              <div class="avatar">W</div>
+              <div class="info">
+                <div class="nm" id="pfName">Absolom Ondara</div>
+                <div class="sub" id="pfEmail">absolomjayson46@gmail.com</div>
+                <div class="sub" id="pfPhone">+254 724 662 792</div>
+              </div>
             </div>
-
-            <!-- Dashboard Content -->
-            <div id="dashboard-content" class="page-content">
-                <div class="stats-cards">
-                    <div class="stat-card in-progress">
-                        <div class="stat-icon">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="inProgressCount">12</h3>
-                            <p>Orders in Progress</p>
-                        </div>
-                    </div>
-                    <div class="stat-card in-review">
-                        <div class="stat-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="inReviewCount">5</h3>
-                            <p>Orders in Review</p>
-                        </div>
-                    </div>
-                    <div class="stat-card completed">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="completedCount">28</h3>
-                            <p>Orders Completed</p>
-                        </div>
-                    </div>
-                    <div class="stat-card cancelled">
-                        <div class="stat-icon">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="cancelledCount">3</h3>
-                            <p>Orders Cancelled</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="orders-container">
-                    <div class="orders-header">
-                        <h3>Recent Orders</h3>
-                    </div>
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order Title</th>
-                                <th>Client</th>
-                                <th>Assigned Date</th>
-                                <th>Deadline</th>
-                                <th>Pages</th>
-                                <th>Cost</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentOrdersTable">
-                            <!-- Recent orders will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
+            <hr style="margin:10px 0">
+            <div style="display:flex;gap:8px">
+              <button class="btn ghost" id="editProfile">Edit</button>
+              <button class="btn" id="logoutBtn">Logout</button>
             </div>
-
-            <!-- Other pages will be loaded here dynamically -->
-            <div id="other-content" class="page-content" style="display: none;"></div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Add Order Modal -->
-    <div class="modal" id="addOrderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Order</h3>
-                <button class="close-modal">&times;</button>
+      <div class="content" id="contentArea" aria-live="polite">
+        <!-- Dashboard view by default -->
+        <section id="dashboardView">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h1 style="margin:0">Dashboard</h1>
+            <div class="muted">Quick overview of your orders and activity</div>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <h3>Total Orders</h3>
+              <p id="stat-total" style="font-size:1.6rem;font-weight:800;margin:8px 0 0 0">0</p>
+              <p class="muted" style="margin-top:8px">All Assigned</p>
             </div>
-            <div class="modal-body">
-                <form id="orderForm">
-                    <div class="form-group">
-                        <label for="orderTitle">Order Title</label>
-                        <input type="text" id="orderTitle" class="form-control" placeholder="Enter order title" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="assignedDate">Assigned Date</label>
-                            <input type="date" id="assignedDate" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="deadline">Deadline</label>
-                            <input type="date" id="deadline" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="pages">Amount of Pages</label>
-                            <input type="number" id="pages" class="form-control" min="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="costPerPage">Cost Per Page (KSH)</label>
-                            <input type="number" id="costPerPage" class="form-control" min="1" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="clientName">Client Name</label>
-                        <input type="text" id="clientName" class="form-control" placeholder="Enter client name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="additionalInstructions">Additional Instructions</label>
-                        <textarea id="additionalInstructions" class="form-control" rows="4" placeholder="Enter any additional instructions for this order"></textarea>
-                    </div>
-                </form>
+            <div class="card">
+              <h3>In Progress</h3>
+              <p id="stat-inprogress" style="font-size:1.6rem;font-weight:800;margin:8px 0 0 0">0</p>
+              <p class="muted" style="margin-top:8px">All Active Orders</p>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary close-modal">Cancel</button>
-                <button class="btn btn-primary" id="submitOrder">Create Order</button>
+            <div class="card">
+              <h3>In Review</h3>
+              <p id="stat-inreview" style="font-size:1.6rem;font-weight:800;margin:8px 0 0 0">0</p>
+              <p class="muted" style="margin-top:8px">All Submitted Orders</p>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Order Details Modal -->
-    <div class="order-details-modal" id="orderDetailsModal">
-        <div class="order-details-content">
-            <div class="order-instructions">
-                <h3>Order Instructions</h3>
-                <div id="orderInstructionsContent">
-                    <!-- Instructions will be populated here -->
-                </div>
+          <hr style="margin:18px 0;border:none;border-top:1px solid #f1f5f9">
+
+          <div>
+            <h3>Recent Orders</h3>
+            <div id="recentList" class="orders-list" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <!-- Simple container placeholders for other views; JS shows/hides -->
+        <section id="inprogressView" style="display:none">
+          <h2>Orders in Progress</h2>
+          <div id="inprogressList" class="orders-list" style="margin-top:10px"></div>
+        </section>
+
+        <section id="inreviewView" style="display:none">
+          <h2>Orders in Review</h2>
+          <div id="inreviewList" class="orders-list" style="margin-top:10px"></div>
+        </section>
+
+        <section id="completedView" style="display:none">
+          <h2>Completed Orders</h2>
+          <div id="completedList" class="orders-list" style="margin-top:10px"></div>
+        </section>
+
+        <section id="cancelledView" style="display:none">
+          <h2>Cancelled Orders</h2>
+          <div id="cancelledList" class="orders-list" style="margin-top:10px"></div>
+        </section>
+
+        <section id="ordersView" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <h2>Order Management</h2>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="searchOrders" placeholder="Search by title or client" style="padding:8px;border-radius:8px;border:1px solid #eef6ff" />
+              <select id="filterStatus" style="padding:8px;border-radius:8px;border:1px solid #eef6ff">
+                <option value="">All statuses</option>
+                <option value="In Progress">In Progress</option>
+                <option value="In Review">In Review</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Revision">Revision</option>
+              </select>
             </div>
-            <div class="order-info">
-                <h3>Order Details</h3>
-                <div class="info-item">
-                    <label>Order ID</label>
-                    <p id="detailOrderId">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Title</label>
-                    <p id="detailOrderTitle">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Client</label>
-                    <p id="detailClient">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Pages</label>
-                    <p id="detailPages">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Amount</label>
-                    <p id="detailAmount">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Assigned Date</label>
-                    <p id="detailAssignedDate">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Deadline</label>
-                    <p id="detailDeadline">-</p>
-                </div>
-                <div class="info-item">
-                    <label>Status</label>
-                    <p id="detailStatus">-</p>
-                </div>
-                <button class="btn btn-primary" id="closeOrderDetails" style="width: 100%; margin-top: 20px;">Close</button>
-            </div>
-        </div>
-    </div>
+          </div>
 
-    <script>
-        // DOM Elements
-        const sidebarLinks = document.querySelectorAll('.nav-links a');
-        const addOrderBtn = document.getElementById('addOrderBtn');
-        const addOrderModal = document.getElementById('addOrderModal');
-        const orderDetailsModal = document.getElementById('orderDetailsModal');
-        const closeModalBtns = document.querySelectorAll('.close-modal');
-        const submitOrderBtn = document.getElementById('submitOrder');
-        const orderForm = document.getElementById('orderForm');
-        const pageTitle = document.getElementById('pageTitle');
-        const dashboardContent = document.getElementById('dashboard-content');
-        const otherContent = document.getElementById('other-content');
-        const pageActions = document.getElementById('pageActions');
-        const closeOrderDetailsBtn = document.getElementById('closeOrderDetails');
-        const recentOrdersTable = document.getElementById('recentOrdersTable');
-
-        // Statistics elements
-        const inProgressCount = document.getElementById('inProgressCount');
-        const inReviewCount = document.getElementById('inReviewCount');
-        const completedCount = document.getElementById('completedCount');
-        const cancelledCount = document.getElementById('cancelledCount');
-        const walletAmount = document.getElementById('walletAmount');
-        const earnedAmount = document.getElementById('earnedAmount');
-
-        // Order details elements
-        const orderInstructionsContent = document.getElementById('orderInstructionsContent');
-        const detailOrderId = document.getElementById('detailOrderId');
-        const detailOrderTitle = document.getElementById('detailOrderTitle');
-        const detailClient = document.getElementById('detailClient');
-        const detailPages = document.getElementById('detailPages');
-        const detailAmount = document.getElementById('detailAmount');
-        const detailAssignedDate = document.getElementById('detailAssignedDate');
-        const detailDeadline = document.getElementById('detailDeadline');
-        const detailStatus = document.getElementById('detailStatus');
-
-        // Sample orders data with additional instructions
-        let orders = [
-            {
-                id: 1,
-                title: "Research on AI Ethics",
-                client: "Jane Smith",
-                assignedDate: "2023-06-15",
-                deadline: "2023-06-25",
-                pages: 10,
-                costPerPage: 500,
-                status: "in-progress",
-                instructions: "Please focus on the ethical implications of AI in healthcare. Include at least 5 recent case studies. The paper should be written in APA format with a minimum of 10 references. Pay special attention to privacy concerns and bias in algorithms."
-            },
-            {
-                id: 2,
-                title: "Climate Change Impact Analysis",
-                client: "Robert Johnson",
-                assignedDate: "2023-06-10",
-                deadline: "2023-06-20",
-                pages: 15,
-                costPerPage: 500,
-                status: "in-review",
-                instructions: "Analyze the impact of climate change on agricultural productivity in Sub-Saharan Africa. Include data from the last 20 years. Use graphs and charts to illustrate trends. Focus on adaptation strategies that have been successful."
-            },
-            {
-                id: 3,
-                title: "Business Plan for Startup",
-                client: "Sarah Williams",
-                assignedDate: "2023-06-05",
-                deadline: "2023-06-15",
-                pages: 20,
-                costPerPage: 500,
-                status: "completed",
-                instructions: "Create a comprehensive business plan for a tech startup focusing on sustainable energy solutions. Include market analysis, financial projections, and marketing strategy. The plan should be investor-ready with a clear executive summary."
-            },
-            {
-                id: 4,
-                title: "Literature Review on Renewable Energy",
-                client: "Michael Brown",
-                assignedDate: "2023-06-12",
-                deadline: "2023-06-22",
-                pages: 12,
-                costPerPage: 450,
-                status: "in-progress",
-                instructions: "Conduct a literature review on recent advancements in solar energy technology. Focus on efficiency improvements and cost reduction strategies. Compare different types of solar cells and their applications."
-            },
-            {
-                id: 5,
-                title: "Market Analysis for E-commerce",
-                client: "Emily Davis",
-                assignedDate: "2023-06-08",
-                deadline: "2023-06-18",
-                pages: 18,
-                costPerPage: 550,
-                status: "in-review",
-                instructions: "Analyze the current e-commerce market trends post-pandemic. Focus on consumer behavior changes and emerging technologies. Include competitor analysis and recommendations for new market entrants."
-            }
-        ];
-
-        // Initialize the application
-        function initApp() {
-            updateStatistics();
-            loadRecentOrders();
-            loadPage('dashboard');
-        }
-
-        // Update statistics based on orders data
-        function updateStatistics() {
-            const inProgress = orders.filter(order => order.status === 'in-progress').length;
-            const inReview = orders.filter(order => order.status === 'in-review').length;
-            const completed = orders.filter(order => order.status === 'completed').length;
-            const cancelled = orders.filter(order => order.status === 'cancelled').length;
-            
-            inProgressCount.textContent = inProgress;
-            inReviewCount.textContent = inReview;
-            completedCount.textContent = completed;
-            cancelledCount.textContent = cancelled;
-            
-            // Calculate wallet balance (orders in review)
-            const walletBalance = orders
-                .filter(order => order.status === 'in-review')
-                .reduce((total, order) => total + (order.pages * order.costPerPage), 0);
-            
-            walletAmount.textContent = walletBalance.toLocaleString();
-            
-            // Calculate amount earned (completed orders)
-            const totalEarned = orders
-                .filter(order => order.status === 'completed')
-                .reduce((total, order) => total + (order.pages * order.costPerPage), 0);
-            
-            earnedAmount.textContent = totalEarned.toLocaleString();
-        }
-
-        // Load recent orders for dashboard
-        function loadRecentOrders() {
-            // Get the 3 most recent orders
-            const recentOrders = [...orders]
-                .sort((a, b) => new Date(b.assignedDate) - new Date(a.assignedDate))
-                .slice(0, 3);
-            
-            recentOrdersTable.innerHTML = recentOrders.map(order => `
+          <div style="margin-top:12px;overflow:auto">
+            <table class="orders-table" id="ordersTable" aria-describedby="ordersDesc">
+              <thead>
                 <tr>
-                    <td><span class="order-title" data-id="${order.id}">${order.title}</span></td>
-                    <td>${order.client}</td>
-                    <td>${order.assignedDate}</td>
-                    <td>${order.deadline}</td>
-                    <td>${order.pages}</td>
-                    <td>KSH ${(order.pages * order.costPerPage).toLocaleString()}</td>
-                    <td><span class="status-badge status-${order.status}">${getStatusText(order.status)}</span></td>
+                  <th>Title</th>
+                  <th>Client</th>
+                  <th>Assigned</th>
+                  <th>Deadline</th>
+                  <th>Pages</th>
+                  <th>Cost (KSH)</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-            `).join('');
-            
-            // Add click event to order titles
-            document.querySelectorAll('.order-title').forEach(title => {
-                title.addEventListener('click', function() {
-                    const orderId = parseInt(this.getAttribute('data-id'));
-                    showOrderDetails(orderId);
-                });
-            });
-        }
+              </thead>
+              <tbody id="ordersTBody"></tbody>
+            </table>
+            <div id="ordersDesc" class="muted" style="margin-top:8px">Use "Change Status" to move orders through your workflow.</div>
+          </div>
+        </section>
 
-        // Navigation
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove active class from all links
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-                
-                // Add active class to clicked link
-                this.classList.add('active');
-                
-                const page = this.getAttribute('data-page');
-                loadPage(page);
-            });
-        });
+      </div>
+    </main>
+  </div>
 
-        // Load page content
-        function loadPage(page) {
-            pageTitle.textContent = getPageTitle(page);
-            
-            if (page === 'dashboard') {
-                dashboardContent.style.display = 'block';
-                otherContent.style.display = 'none';
-                pageActions.innerHTML = '';
-            } else {
-                dashboardContent.style.display = 'none';
-                otherContent.style.display = 'block';
-                
-                // Generate content for the selected page
-                otherContent.innerHTML = generatePageContent(page);
-                
-                // Add page-specific actions
-                if (page === 'all-orders') {
-                    pageActions.innerHTML = '<button class="btn btn-primary" id="filterOrders">Filter Orders</button>';
-                } else {
-                    pageActions.innerHTML = '';
-                }
-                
-                // Add event listeners for the new content
-                if (page !== 'all-orders') {
-                    // Add click events to order titles for pages other than Order Management
-                    document.querySelectorAll('.order-title').forEach(title => {
-                        title.addEventListener('click', function() {
-                            const orderId = parseInt(this.getAttribute('data-id'));
-                            showOrderDetails(orderId);
-                        });
-                    });
-                } else {
-                    // Add change events for status dropdowns in Order Management
-                    document.querySelectorAll('.status-select').forEach(select => {
-                        select.addEventListener('change', function() {
-                            const orderId = parseInt(this.getAttribute('data-id'));
-                            const newStatus = this.value;
-                            updateOrderStatus(orderId, newStatus);
-                        });
-                    });
-                    
-                    // Add event listeners for edit and delete buttons
-                    document.querySelectorAll('.edit-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const orderId = parseInt(this.getAttribute('data-id'));
-                            editOrder(orderId);
-                        });
-                    });
-                    
-                    document.querySelectorAll('.delete-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const orderId = parseInt(this.getAttribute('data-id'));
-                            deleteOrder(orderId);
-                        });
-                    });
-                }
-            }
-        }
+  <!-- CREATE ORDER MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h3>Create New Order</h3>
+      <form id="orderForm">
+        <div class="form-grid">
+          <div>
+            <label for="title">Order Title</label>
+            <input id="title" name="title" type="text" required placeholder="e.g. Literature review - 1500 words" />
+          </div>
+          <div>
+            <label for="assignedDate">Assigned Date</label>
+            <input id="assignedDate" name="assignedDate" type="date" required />
+          </div>
+          <div>
+            <label for="deadline">Deadline</label>
+            <input id="deadline" name="deadline" type="date" required />
+          </div>
+          <div>
+            <label for="pages">Amount of Pages</label>
+            <input id="pages" name="pages" type="number" min="1" required value="1" />
+          </div>
+          <div>
+            <label for="costPerPage">Cost per Page (KSH)</label>
+            <input id="costPerPage" name="costPerPage" type="number" min="0" required value="200" />
+          </div>
+          <div>
+            <label for="client">Client Name</label>
+            <input id="client" name="client" type="text" required placeholder="Client name" />
+          </div>
+          <div style="grid-column:1/-1">
+            <label for="notes">Additional Instructions (optional)</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Extra instructions"></textarea>
+          </div>
+        </div>
 
-        // Get page title based on page name
-        function getPageTitle(page) {
-            const titles = {
-                'dashboard': 'Dashboard',
-                'in-progress': 'Orders in Progress',
-                'in-review': 'Orders in Review',
-                'completed': 'Orders Completed',
-                'cancelled': 'Cancelled Orders',
-                'all-orders': 'Order Management'
-            };
-            return titles[page] || 'Page';
-        }
+        <div class="actions">
+          <button type="button" class="btn ghost" id="cancelCreate">Cancel</button>
+          <button type="submit" class="btn primary">Post Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-        // Generate content for different pages
-        function generatePageContent(page) {
-            let filteredOrders = [];
-            
-            if (page === 'in-progress') {
-                filteredOrders = orders.filter(order => order.status === 'in-progress');
-            } else if (page === 'in-review') {
-                filteredOrders = orders.filter(order => order.status === 'in-review');
-            } else if (page === 'completed') {
-                filteredOrders = orders.filter(order => order.status === 'completed');
-            } else if (page === 'cancelled') {
-                filteredOrders = orders.filter(order => order.status === 'cancelled');
-            } else if (page === 'all-orders') {
-                filteredOrders = orders;
-            }
-            
-            // For Order Management page, show edit/delete buttons and status dropdown
-            if (page === 'all-orders') {
-                return `
-                    <div class="orders-container">
-                        <div class="orders-header">
-                            <h3>${getPageTitle(page)} (${filteredOrders.length})</h3>
-                        </div>
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Order Title</th>
-                                    <th>Client</th>
-                                    <th>Assigned Date</th>
-                                    <th>Deadline</th>
-                                    <th>Pages</th>
-                                    <th>Cost</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${filteredOrders.map(order => `
-                                    <tr>
-                                        <td>${order.title}</td>
-                                        <td>${order.client}</td>
-                                        <td>${order.assignedDate}</td>
-                                        <td>${order.deadline}</td>
-                                        <td>${order.pages}</td>
-                                        <td>KSH ${(order.pages * order.costPerPage).toLocaleString()}</td>
-                                        <td>
-                                            <select class="status-select" data-id="${order.id}">
-                                                <option value="in-progress" ${order.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                                                <option value="in-review" ${order.status === 'in-review' ? 'selected' : ''}>In Review</option>
-                                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <button class="action-btn edit-btn" data-id="${order.id}"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn delete" data-id="${order.id}"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } else {
-                // For other pages, show clickable order titles
-                return `
-                    <div class="orders-container">
-                        <div class="orders-header">
-                            <h3>${getPageTitle(page)} (${filteredOrders.length})</h3>
-                        </div>
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Order Title</th>
-                                    <th>Client</th>
-                                    <th>Assigned Date</th>
-                                    <th>Deadline</th>
-                                    <th>Pages</th>
-                                    <th>Cost</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${filteredOrders.map(order => `
-                                    <tr>
-                                        <td><span class="order-title" data-id="${order.id}">${order.title}</span></td>
-                                        <td>${order.client}</td>
-                                        <td>${order.assignedDate}</td>
-                                        <td>${order.deadline}</td>
-                                        <td>${order.pages}</td>
-                                        <td>KSH ${(order.pages * order.costPerPage).toLocaleString()}</td>
-                                        <td><span class="status-badge status-${order.status}">${getStatusText(order.status)}</span></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-        }
+  <script>
+    /*******************************************************
+     * Essay Center — Order Management App (single file)
+     *******************************************************/
 
-        // Get status text for display
-        function getStatusText(status) {
-            const statusText = {
-                'in-progress': 'In Progress',
-                'in-review': 'In Review',
-                'completed': 'Completed',
-                'cancelled': 'Cancelled'
-            };
-            return statusText[status] || status;
-        }
+    // Utility functions
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const formatKsh = v => 'KSH ' + Number(v).toLocaleString('en-KE', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-        // Show order details modal
-        function showOrderDetails(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            // Populate order details
-            detailOrderId.textContent = order.id;
-            detailOrderTitle.textContent = order.title;
-            detailClient.textContent = order.client;
-            detailPages.textContent = order.pages;
-            detailAmount.textContent = `KSH ${(order.pages * order.costPerPage).toLocaleString()}`;
-            detailAssignedDate.textContent = order.assignedDate;
-            detailDeadline.textContent = order.deadline;
-            detailStatus.textContent = getStatusText(order.status);
-            
-            // Populate instructions
-            orderInstructionsContent.innerHTML = `
-                <p>${order.instructions || 'No additional instructions provided.'}</p>
-            `;
-            
-            // Show the modal
-            orderDetailsModal.style.display = 'flex';
-        }
+// Initial demo user profile (replace with auth values later)
+const profile = {
+  name: 'WorldWaysOne',
+  email: 'you@example.com',
+  phone: '+254 700 000 000'
+};
+$('#pfName').textContent = profile.name;
+$('#pfEmail').textContent = profile.email;
+$('#pfPhone').textContent = profile.phone;
+$('.profile .avatar').textContent = profile.name[0] || 'W';
 
-        // Update order status
-        function updateOrderStatus(orderId, newStatus) {
-            const orderIndex = orders.findIndex(o => o.id === orderId);
-            if (orderIndex === -1) return;
-            
-            orders[orderIndex].status = newStatus;
-            updateStatistics();
-            
-            // If we're on a filtered page, reload the content
-            const activePage = document.querySelector('.nav-links a.active').getAttribute('data-page');
-            if (activePage !== 'dashboard' && activePage !== 'all-orders') {
-                loadPage(activePage);
-            }
-            
-            // Also update the recent orders on dashboard
-            loadRecentOrders();
-        }
+// Data management
+const STORAGE_KEY = 'essaycenter_orders_v1';
 
-        // Edit order (placeholder function)
-        function editOrder(orderId) {
-            alert(`Edit functionality for order ${orderId} would be implemented here.`);
-            // In a real application, this would open a modal with the order details for editing
-        }
+function loadOrders(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    return JSON.parse(raw);
+  }catch(e){console.error(e); return [];}
+}
+function saveOrders(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
 
-        // Delete order
-        function deleteOrder(orderId) {
-            if (confirm('Are you sure you want to delete this order?')) {
-                orders = orders.filter(o => o.id !== orderId);
-                updateStatistics();
-                
-                // Reload the current page
-                const activePage = document.querySelector('.nav-links a.active').getAttribute('data-page');
-                loadPage(activePage);
-                
-                // Also update the recent orders on dashboard
-                loadRecentOrders();
-            }
-        }
+// Create a new order object
+function createOrder(data){
+  const id = 'o_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+  const created = new Date().toISOString();
+  const cost = Number(data.pages) * Number(data.costPerPage);
+  return {
+    id,
+    title: data.title,
+    assignedDate: data.assignedDate,
+    deadline: data.deadline,
+    pages: Number(data.pages),
+    costPerPage: Number(data.costPerPage),
+    cost,
+    client: data.client,
+    notes: data.notes || '',
+    status: 'In Progress',
+    created,
+    history: [{at:created, by:'system', note:'Order created', status:'In Progress'}]
+  };
+}
 
-        // Modal functionality
-        addOrderBtn.addEventListener('click', () => {
-            addOrderModal.style.display = 'flex';
-        });
+// UI Rendering functions
+function setActiveNav(view){
+  $$('.nav button.nav-item').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  // show corresponding view
+  const views = ['dashboard','inprogress','inreview','completed','cancelled','orders'];
+  views.forEach(v=>{
+    const el = $('#' + v + 'View');
+    if(el) el.style.display = (v === view) ? '' : 'none';
+  });
+}
 
-        closeModalBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                addOrderModal.style.display = 'none';
-            });
-        });
+function summarizeCounts(orders){
+  const total = orders.length;
+  const counts = {
+    total,
+    inprogress: orders.filter(o=>o.status === 'In Progress').length,
+    inreview: orders.filter(o=>o.status === 'In Review').length,
+    completed: orders.filter(o=>o.status === 'Completed').length,
+    cancelled: orders.filter(o=>o.status === 'Cancelled').length
+  };
+  $('#stat-total').textContent = counts.total;
+  $('#stat-inprogress').textContent = counts.inprogress;
+  $('#stat-inreview').textContent = counts.inreview;
+  $('#count-dashboard').textContent = counts.total;
+  $('#count-inprogress').textContent = counts.inprogress;
+  $('#count-inreview').textContent = counts.inreview;
+  $('#count-completed').textContent = counts.completed;
+  $('#count-cancelled').textContent = counts.cancelled;
+  $('#count-all').textContent = counts.total;
 
-        closeOrderDetailsBtn.addEventListener('click', () => {
-            orderDetailsModal.style.display = 'none';
-        });
+  // wallet = sum of costs of orders in review
+  const wallet = orders.filter(o=>o.status === 'In Review').reduce((s,o)=>s+o.cost,0);
+  $('#walletAmount').textContent = formatKsh(wallet);
+}
 
-        // Submit order form
-        submitOrderBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            if (orderForm.checkValidity()) {
-                // Create new order object
-                const newOrder = {
-                    id: orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1,
-                    title: document.getElementById('orderTitle').value,
-                    client: document.getElementById('clientName').value,
-                    assignedDate: document.getElementById('assignedDate').value,
-                    deadline: document.getElementById('deadline').value,
-                    pages: parseInt(document.getElementById('pages').value),
-                    costPerPage: parseInt(document.getElementById('costPerPage').value),
-                    status: 'in-progress',
-                    instructions: document.getElementById('additionalInstructions').value
-                };
-                
-                // Add to orders array
-                orders.push(newOrder);
-                
-                // Update statistics and recent orders
-                updateStatistics();
-                loadRecentOrders();
-                
-                // Close modal and reset form
-                addOrderModal.style.display = 'none';
-                orderForm.reset();
-                
-                alert('Order created successfully!');
-            } else {
-                alert('Please fill in all required fields.');
-            }
-        });
+function statusBadgeHTML(status){
+  const s = status.toLowerCase().replace(' ','-');
+  return `<span class="badge ${s}">${status}</span>`;
+}
 
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === addOrderModal) {
-                addOrderModal.style.display = 'none';
-            }
-            if (e.target === orderDetailsModal) {
-                orderDetailsModal.style.display = 'none';
-            }
-        });
+function progressForStatus(status){
+  switch(status){
+    case 'In Progress': return 40;
+    case 'In Review': return 70;
+    case 'Revision': return 60;
+    case 'Completed': return 100;
+    case 'Cancelled': return 0;
+    default: return 0;
+  }
+}
 
-        // Initialize the application
-        initApp();
-    </script>
+function renderRecent(orders){
+  const container = $('#recentList');
+  container.innerHTML = '';
+  const recent = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created)).slice(0,6);
+  if(recent.length===0){
+    container.innerHTML = '<div class="muted">No recent orders. Create one with the + button.</div>';
+    return;
+  }
+  recent.forEach(o=>{
+    const leftColor = {
+      'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
+    }[o.status] || '#e6f2ff';
+    const div = document.createElement('div');
+    div.className = 'order';
+    div.innerHTML = `
+      <div class="left" style="background:${leftColor}"></div>
+      <div class="body">
+        <h3>${escapeHtml(o.title)} <small style="color:var(--muted);font-weight:600">• ${escapeHtml(o.client)}</small></h3>
+        <div class="meta">
+          ${statusBadgeHTML(o.status)}
+          <div class="small">Assigned: ${o.assignedDate}</div>
+          <div class="small">Deadline: ${o.deadline}</div>
+          <div class="small">Cost: ${formatKsh(o.cost)}</div>
+        </div>
+        <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div class="actions">
+          <button class="tiny-btn" onclick="focusOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
+          <button class="tiny-btn" onclick="quickChangeStatus('${o.id}')"><i class="fa-solid fa-arrow-right"></i></button>
+          <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+        <div style="width:120px">
+          <div style="height:8px;background:#eef6ff;border-radius:999px;overflow:hidden">
+            <div style="height:8px;width:${progressForStatus(o.status)}%;background:linear-gradient(90deg,var(--accent),#4aa3ff)"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderListByStatus(orders, status, containerId){
+  const container = $(containerId);
+  container.innerHTML = '';
+  const list = orders.filter(o=>o.status === status).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+  if(list.length===0){
+    container.innerHTML = '<div class="muted">No orders in this section.</div>';
+    return;
+  }
+  list.forEach(o=>{
+    const leftColor = {
+      'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
+    }[o.status] || '#e6f2ff';
+    const d = document.createElement('div');
+    d.className = 'order';
+    d.innerHTML = `
+      <div class="left" style="background:${leftColor}"></div>
+      <div class="body">
+        <h3>${escapeHtml(o.title)}</h3>
+        <div class="meta">
+          ${statusBadgeHTML(o.status)}
+          <div class="small">Client: ${escapeHtml(o.client)}</div>
+          <div class="small">Assigned: ${o.assignedDate}</div>
+          <div class="small">Deadline: ${o.deadline}</div>
+          <div class="small">Cost: ${formatKsh(o.cost)}</div>
+        </div>
+        <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <select data-order="${o.id}" class="changeStatusSelect" aria-label="Change status">
+            <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
+            <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
+            <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
+            <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
+            <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+          </select>
+          <button class="tiny-btn" onclick="focusOrder('${o.id}')">Details</button>
+          <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+    container.appendChild(d);
+  });
+}
+
+function renderOrdersTable(orders, filter='', search=''){
+  const tbody = $('#ordersTBody');
+  tbody.innerHTML = '';
+  let list = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created));
+  if(filter) list = list.filter(o=>o.status === filter);
+  if(search) list = list.filter(o=> (o.title + ' ' + o.client).toLowerCase().includes(search.toLowerCase()));
+  if(list.length===0){
+    tbody.innerHTML = '<tr><td colspan="9" class="muted">No orders found</td></tr>';
+    return;
+  }
+  list.forEach(o=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(o.title)}</td>
+      <td>${escapeHtml(o.client)}</td>
+      <td>${o.assignedDate}</td>
+      <td>${o.deadline}</td>
+      <td>${o.pages}</td>
+      <td>${formatKsh(o.cost)}</td>
+      <td>${statusBadgeHTML(o.status)}</td>
+      <td>
+        <select data-order="${o.id}" class="tableChangeStatus" aria-label="Change status">
+          <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
+          <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
+          <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
+          <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
+          <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+        </select>
+      </td>
+      <td>
+        <button class="tiny-btn" onclick="focusOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
+        <button class="tiny-btn" onclick="quickChangeStatus('${o.id}')"><i class="fa-solid fa-arrow-right"></i></button>
+        <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// small helpers
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// Quick focus + details (could be expanded into a modal)
+window.focusOrder = function(id){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return alert('Order not found');
+  const message = `
+Title: ${ord.title}
+Client: ${ord.client}
+Status: ${ord.status}
+Assigned: ${ord.assignedDate}
+Deadline: ${ord.deadline}
+Pages: ${ord.pages}
+Cost: ${formatKsh(ord.cost)}
+Notes: ${ord.notes || '-'}
+Created: ${new Date(ord.created).toLocaleString()}
+  `;
+  alert(message);
+};
+
+// Quick status change helper for recent list (cycles forward)
+window.quickChangeStatus = function(id){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return;
+  const orderFlow = ['In Progress','In Review','Revision','Completed'];
+  const idx = orderFlow.indexOf(ord.status);
+  const next = orderFlow[Math.min(idx+1, orderFlow.length-1)] || 'In Progress';
+  changeOrderStatus(id, next, 'user quick change');
+};
+
+// Change status by id
+function changeOrderStatus(id, newStatus, by='user'){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return;
+  ord.status = newStatus;
+  ord.history.push({at: new Date().toISOString(), by, note:`Status changed to ${newStatus}`, status:newStatus});
+  saveOrders(orders);
+  refreshUI();
+}
+
+// Delete order by id
+window.deleteOrder = function(id){
+  if(!confirm("Are you sure you want to delete this order?")) return;
+  let orders = loadOrders();
+  orders = orders.filter(o => o.id !== id);
+  saveOrders(orders);
+  refreshUI();
+};
+
+// Event listeners & wiring
+function attachEvents(){
+  // Nav click
+  $$('.nav button.nav-item').forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const view = b.dataset.view;
+      setActiveNav(view);
+    });
+  });
+
+  // Open create modal
+  $('#openCreate').addEventListener('click', ()=> openModal());
+  $('#cancelCreate').addEventListener('click', ()=> closeModal());
+
+  // modal backdrop close when clicking outside
+  $('#modalBackdrop').addEventListener('click', (e)=>{
+    if(e.target === $('#modalBackdrop')) closeModal();
+  });
+
+  // profile toggle
+  $('#profileBtn').addEventListener('click', (e)=>{
+    $('#profileMenu').classList.toggle('show');
+  });
+
+  // logout simulated
+  $('#logoutBtn').addEventListener('click', ()=> { alert('Logged out (demo)'); });
+
+  // create form submit
+  $('#orderForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+      title: form.title.value.trim(),
+      assignedDate: form.assignedDate.value,
+      deadline: form.deadline.value,
+      pages: form.pages.value,
+      costPerPage: form.costPerPage.value,
+      client: form.client.value.trim(),
+      notes: form.notes.value.trim()
+    };
+    if(!data.title || !data.assignedDate || !data.deadline || !data.pages || !data.costPerPage || !data.client){
+      return alert('Please fill required fields.');
+    }
+    const ord = createOrder(data);
+    const orders = loadOrders();
+    orders.push(ord);
+    saveOrders(orders);
+    closeModal();
+    setActiveNav('inprogress');
+    refreshUI();
+  });
+
+  // Search/filter in orders table
+  $('#searchOrders').addEventListener('input', (e)=>{
+    renderOrdersTable(loadOrders(), $('#filterStatus').value, e.target.value.trim());
+  });
+  $('#filterStatus').addEventListener('change', ()=> {
+    renderOrdersTable(loadOrders(), $('#filterStatus').value, $('#searchOrders').value.trim());
+  });
+
+  // Delegated event listeners for selects in lists & table
+  document.addEventListener('change', (e)=>{
+    if(e.target.matches('.changeStatusSelect, .tableChangeStatus')){
+      const id = e.target.dataset.order;
+      const newStatus = e.target.value;
+      changeOrderStatus(id, newStatus, 'user change');
+    }
+  });
+}
+
+// Modal controls
+function openModal(){
+  $('#modalBackdrop').classList.add('show');
+  $('#modalBackdrop').setAttribute('aria-hidden','false');
+  const today = new Date().toISOString().slice(0,10);
+  $('#assignedDate').value = today;
+  const then = new Date(); then.setDate(then.getDate()+3);
+  $('#deadline').value = then.toISOString().slice(0,10);
+}
+function closeModal(){
+  $('#modalBackdrop').classList.remove('show');
+  $('#modalBackdrop').setAttribute('aria-hidden','true');
+  $('#orderForm').reset();
+}
+
+// Seed some demo orders if none exist (for fast testing)
+function seedDemoIfEmpty(){
+  const orders = loadOrders();
+  if(orders.length === 0){
+    const sample = [
+      {title:'Literature Review on AI Ethics', assignedDate: todayAdd(-2), deadline: todayAdd(3), pages:5, costPerPage:250, client:'Adamu', notes:'Include 5 refs', status:'In Progress'},
+      {title:'Methodology Chapter', assignedDate: todayAdd(-4), deadline: todayAdd(1), pages:6, costPerPage:220, client:'Beatrice', notes:'APA 7', status:'In Review'},
+      {title:'Final Edits and Proofread', assignedDate: todayAdd(-8), deadline: todayAdd(-1), pages:3, costPerPage:200, client:'Chalo', notes:'Urgent', status:'Completed'}
+    ].map(s=>{
+      const o = createOrder(s);
+      o.pages = s.pages; o.costPerPage = s.costPerPage; o.cost = s.pages * s.costPerPage; o.status = s.status;
+      o.history.push({at:new Date().toISOString(), by:'seed', note:'Seeded order', status:o.status});
+      return o;
+    });
+    saveOrders(sample);
+  }
+}
+function todayAdd(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+
+// Full refresh
+function refreshUI(){
+  const orders = loadOrders();
+  summarizeCounts(orders);
+  renderRecent(orders);
+  renderListByStatus(orders, 'In Progress', '#inprogressList');
+  renderListByStatus(orders, 'In Review', '#inreviewList');
+  renderListByStatus(orders, 'Completed', '#completedList');
+  renderListByStatus(orders, 'Cancelled', '#cancelledList');
+  renderOrdersTable(orders, $('#filterStatus').value, $('#searchOrders').value.trim());
+}
+
+// Initialization
+(function init(){
+  attachEvents();
+  seedDemoIfEmpty();
+  refreshUI();
+  setActiveNav('dashboard');
+  document.addEventListener('keydown', (e)=> {
+    if(e.key === 'Escape') { closeModal(); $('#profileMenu').classList.remove('show'); }
+  });
+})();
+</script>
 </body>
 </html>
