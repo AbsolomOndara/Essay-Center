@@ -252,7 +252,7 @@
       </nav>
 
       <div style="margin-top:auto;padding-top:12px">
-        <p class="muted" style="font-size:0.85rem">Essay Center • White & Light Blue theme</p>
+        <p class="muted" style="font-size:0.85rem">Essay Center</p>
       </div>
     </aside>
 
@@ -268,17 +268,17 @@
         </div>
 
         <div class="profile" id="profileBtn" tabindex="0" aria-haspopup="true" aria-expanded="false">
-          <div class="avatar">W</div>
-          <div class="name">WorldWaysOne</div>
+          <div class="avatar">A</div>
+          <div class="name">Absolom Ondara</div>
           <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
 
           <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
             <div class="meta">
               <div class="avatar">W</div>
               <div class="info">
-                <div class="nm" id="pfName">WorldWaysOne</div>
-                <div class="sub" id="pfEmail">you@example.com</div>
-                <div class="sub" id="pfPhone">+254 700 000 000</div>
+                <div class="nm" id="pfName">Absolom Ondara</div>
+                <div class="sub" id="pfEmail">absolomjayson46@gmail.com</div>
+                <div class="sub" id="pfPhone">+254 724 662 792</div>
               </div>
             </div>
             <hr style="margin:10px 0">
@@ -416,14 +416,14 @@
             <input id="client" name="client" type="text" required placeholder="Client name" />
           </div>
           <div style="grid-column:1/-1">
-            <label for="notes">Notes (optional)</label>
+            <label for="notes">Additional Instructions (optional)</label>
             <textarea id="notes" name="notes" rows="3" placeholder="Extra instructions"></textarea>
           </div>
         </div>
 
         <div class="actions">
           <button type="button" class="btn ghost" id="cancelCreate">Cancel</button>
-          <button type="submit" class="btn primary">Post Order (goes to In Progress)</button>
+          <button type="submit" class="btn primary">Post Order</button>
         </div>
       </form>
     </div>
@@ -792,23 +792,7 @@ Created: ${new Date(ord.created).toLocaleString()}
     }
 
     // Seed some demo orders if none exist (for fast testing)
-    function seedDemoIfEmpty(){
-      const orders = loadOrders();
-      if(orders.length === 0){
-        const sample = [
-          {title:'Literature Review on AI Ethics', assignedDate: todayAdd(-2), deadline: todayAdd(3), pages:5, costPerPage:250, client:'Adamu', notes:'Include 5 refs', status:'In Progress'},
-          {title:'Methodology Chapter', assignedDate: todayAdd(-4), deadline: todayAdd(1), pages:6, costPerPage:220, client:'Beatrice', notes:'APA 7', status:'In Review'},
-          {title:'Final Edits and Proofread', assignedDate: todayAdd(-8), deadline: todayAdd(-1), pages:3, costPerPage:200, client:'Chalo', notes:'Urgent', status:'Completed'}
-        ].map(s=>{
-          const o = createOrder(s);
-          o.pages = s.pages; o.costPerPage = s.costPerPage; o.cost = s.pages * s.costPerPage; o.status = s.status;
-          o.history.push({at:new Date().toISOString(), by:'seed', note:'Seeded order', status:o.status});
-          return o;
-        });
-        saveOrders(sample);
-      }
-    }
-    function todayAdd(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+    
 
     // Full refresh
     function refreshUI(){
