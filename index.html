@@ -792,7 +792,23 @@ Created: ${new Date(ord.created).toLocaleString()}
     }
 
     // Seed some demo orders if none exist (for fast testing)
-    
+    function seedDemoIfEmpty(){
+      const orders = loadOrders();
+      if(orders.length === 0){
+        const sample = [
+          {title:'Literature Review on AI Ethics', assignedDate: todayAdd(-2), deadline: todayAdd(3), pages:5, costPerPage:250, client:'Adamu', notes:'Include 5 refs', status:'In Progress'},
+          {title:'Methodology Chapter', assignedDate: todayAdd(-4), deadline: todayAdd(1), pages:6, costPerPage:220, client:'Beatrice', notes:'APA 7', status:'In Review'},
+          {title:'Final Edits and Proofread', assignedDate: todayAdd(-8), deadline: todayAdd(-1), pages:3, costPerPage:200, client:'Chalo', notes:'Urgent', status:'Completed'}
+        ].map(s=>{
+          const o = createOrder(s);
+          o.pages = s.pages; o.costPerPage = s.costPerPage; o.cost = s.pages * s.costPerPage; o.status = s.status;
+          o.history.push({at:new Date().toISOString(), by:'seed', note:'Seeded order', status:o.status});
+          return o;
+        });
+        saveOrders(sample);
+      }
+    }
+    function todayAdd(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
 
     // Full refresh
     function refreshUI(){
