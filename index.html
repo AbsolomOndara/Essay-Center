@@ -435,236 +435,243 @@
      *******************************************************/
 
     // Utility functions
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-    const formatKsh = v => 'KSH ' + Number(v).toLocaleString('en-KE', {minimumFractionDigits:2, maximumFractionDigits:2});
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const formatKsh = v => 'KSH ' + Number(v).toLocaleString('en-KE', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-    // Initial demo user profile (replace with auth values later)
-    const profile = {
-      name: 'WorldWaysOne',
-      email: 'you@example.com',
-      phone: '+254 700 000 000'
-    };
-    $('#pfName').textContent = profile.name;
-    $('#pfEmail').textContent = profile.email;
-    $('#pfPhone').textContent = profile.phone;
-    $('.profile .avatar').textContent = profile.name[0] || 'W';
+// Initial demo user profile (replace with auth values later)
+const profile = {
+  name: 'WorldWaysOne',
+  email: 'you@example.com',
+  phone: '+254 700 000 000'
+};
+$('#pfName').textContent = profile.name;
+$('#pfEmail').textContent = profile.email;
+$('#pfPhone').textContent = profile.phone;
+$('.profile .avatar').textContent = profile.name[0] || 'W';
 
-    // Data management
-    const STORAGE_KEY = 'essaycenter_orders_v1';
+// Data management
+const STORAGE_KEY = 'essaycenter_orders_v1';
 
-    function loadOrders(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return [];
-        return JSON.parse(raw);
-      }catch(e){console.error(e); return [];}
-    }
-    function saveOrders(list){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    }
+function loadOrders(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    return JSON.parse(raw);
+  }catch(e){console.error(e); return [];}
+}
+function saveOrders(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
 
-    // Create a new order object
-    function createOrder(data){
-      const id = 'o_' + Date.now() + '_' + Math.floor(Math.random()*1000);
-      const created = new Date().toISOString();
-      const cost = Number(data.pages) * Number(data.costPerPage);
-      return {
-        id,
-        title: data.title,
-        assignedDate: data.assignedDate,
-        deadline: data.deadline,
-        pages: Number(data.pages),
-        costPerPage: Number(data.costPerPage),
-        cost,
-        client: data.client,
-        notes: data.notes || '',
-        status: 'In Progress',
-        created,
-        history: [{at:created, by:'system', note:'Order created', status:'In Progress'}]
-      };
-    }
+// Create a new order object
+function createOrder(data){
+  const id = 'o_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+  const created = new Date().toISOString();
+  const cost = Number(data.pages) * Number(data.costPerPage);
+  return {
+    id,
+    title: data.title,
+    assignedDate: data.assignedDate,
+    deadline: data.deadline,
+    pages: Number(data.pages),
+    costPerPage: Number(data.costPerPage),
+    cost,
+    client: data.client,
+    notes: data.notes || '',
+    status: 'In Progress',
+    created,
+    history: [{at:created, by:'system', note:'Order created', status:'In Progress'}]
+  };
+}
 
-    // UI Rendering functions
-    function setActiveNav(view){
-      $$('.nav button.nav-item').forEach(b=>{
-        b.classList.toggle('active', b.dataset.view === view);
-      });
-      // show corresponding view
-      const views = ['dashboard','inprogress','inreview','completed','cancelled','orders'];
-      views.forEach(v=>{
-        const el = $('#' + v + 'View');
-        if(el) el.style.display = (v === view) ? '' : 'none';
-      });
-    }
+// UI Rendering functions
+function setActiveNav(view){
+  $$('.nav button.nav-item').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  // show corresponding view
+  const views = ['dashboard','inprogress','inreview','completed','cancelled','orders'];
+  views.forEach(v=>{
+    const el = $('#' + v + 'View');
+    if(el) el.style.display = (v === view) ? '' : 'none';
+  });
+}
 
-    function summarizeCounts(orders){
-      const total = orders.length;
-      const counts = {
-        total,
-        inprogress: orders.filter(o=>o.status === 'In Progress').length,
-        inreview: orders.filter(o=>o.status === 'In Review').length,
-        completed: orders.filter(o=>o.status === 'Completed').length,
-        cancelled: orders.filter(o=>o.status === 'Cancelled').length
-      };
-      $('#stat-total').textContent = counts.total;
-      $('#stat-inprogress').textContent = counts.inprogress;
-      $('#stat-inreview').textContent = counts.inreview;
-      $('#count-dashboard').textContent = counts.total;
-      $('#count-inprogress').textContent = counts.inprogress;
-      $('#count-inreview').textContent = counts.inreview;
-      $('#count-completed').textContent = counts.completed;
-      $('#count-cancelled').textContent = counts.cancelled;
-      $('#count-all').textContent = counts.total;
+function summarizeCounts(orders){
+  const total = orders.length;
+  const counts = {
+    total,
+    inprogress: orders.filter(o=>o.status === 'In Progress').length,
+    inreview: orders.filter(o=>o.status === 'In Review').length,
+    completed: orders.filter(o=>o.status === 'Completed').length,
+    cancelled: orders.filter(o=>o.status === 'Cancelled').length
+  };
+  $('#stat-total').textContent = counts.total;
+  $('#stat-inprogress').textContent = counts.inprogress;
+  $('#stat-inreview').textContent = counts.inreview;
+  $('#count-dashboard').textContent = counts.total;
+  $('#count-inprogress').textContent = counts.inprogress;
+  $('#count-inreview').textContent = counts.inreview;
+  $('#count-completed').textContent = counts.completed;
+  $('#count-cancelled').textContent = counts.cancelled;
+  $('#count-all').textContent = counts.total;
 
-      // wallet = sum of costs of orders in review
-      const wallet = orders.filter(o=>o.status === 'In Review').reduce((s,o)=>s+o.cost,0);
-      $('#walletAmount').textContent = formatKsh(wallet);
-    }
+  // wallet = sum of costs of orders in review
+  const wallet = orders.filter(o=>o.status === 'In Review').reduce((s,o)=>s+o.cost,0);
+  $('#walletAmount').textContent = formatKsh(wallet);
+}
 
-    function statusBadgeHTML(status){
-      const s = status.toLowerCase().replace(' ','-');
-      return `<span class="badge ${s}">${status}</span>`;
-    }
+function statusBadgeHTML(status){
+  const s = status.toLowerCase().replace(' ','-');
+  return `<span class="badge ${s}">${status}</span>`;
+}
 
-    function progressForStatus(status){
-      switch(status){
-        case 'In Progress': return 40;
-        case 'In Review': return 70;
-        case 'Revision': return 60;
-        case 'Completed': return 100;
-        case 'Cancelled': return 0;
-        default: return 0;
-      }
-    }
+function progressForStatus(status){
+  switch(status){
+    case 'In Progress': return 40;
+    case 'In Review': return 70;
+    case 'Revision': return 60;
+    case 'Completed': return 100;
+    case 'Cancelled': return 0;
+    default: return 0;
+  }
+}
 
-    function renderRecent(orders){
-      const container = $('#recentList');
-      container.innerHTML = '';
-      const recent = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created)).slice(0,6);
-      if(recent.length===0){
-        container.innerHTML = '<div class="muted">No recent orders. Create one with the + button.</div>';
-        return;
-      }
-      recent.forEach(o=>{
-        const leftColor = {
-          'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
-        }[o.status] || '#e6f2ff';
-        const div = document.createElement('div');
-        div.className = 'order';
-        div.innerHTML = `
-          <div class="left" style="background:${leftColor}"></div>
-          <div class="body">
-            <h3>${escapeHtml(o.title)} <small style="color:var(--muted);font-weight:600">• ${escapeHtml(o.client)}</small></h3>
-            <div class="meta">
-              ${statusBadgeHTML(o.status)}
-              <div class="small">Assigned: ${o.assignedDate}</div>
-              <div class="small">Deadline: ${o.deadline}</div>
-              <div class="small">Cost: ${formatKsh(o.cost)}</div>
-            </div>
-            <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
+function renderRecent(orders){
+  const container = $('#recentList');
+  container.innerHTML = '';
+  const recent = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created)).slice(0,6);
+  if(recent.length===0){
+    container.innerHTML = '<div class="muted">No recent orders. Create one with the + button.</div>';
+    return;
+  }
+  recent.forEach(o=>{
+    const leftColor = {
+      'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
+    }[o.status] || '#e6f2ff';
+    const div = document.createElement('div');
+    div.className = 'order';
+    div.innerHTML = `
+      <div class="left" style="background:${leftColor}"></div>
+      <div class="body">
+        <h3>${escapeHtml(o.title)} <small style="color:var(--muted);font-weight:600">• ${escapeHtml(o.client)}</small></h3>
+        <div class="meta">
+          ${statusBadgeHTML(o.status)}
+          <div class="small">Assigned: ${o.assignedDate}</div>
+          <div class="small">Deadline: ${o.deadline}</div>
+          <div class="small">Cost: ${formatKsh(o.cost)}</div>
+        </div>
+        <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div class="actions">
+          <button class="tiny-btn" onclick="focusOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
+          <button class="tiny-btn" onclick="quickChangeStatus('${o.id}')"><i class="fa-solid fa-arrow-right"></i></button>
+          <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+        <div style="width:120px">
+          <div style="height:8px;background:#eef6ff;border-radius:999px;overflow:hidden">
+            <div style="height:8px;width:${progressForStatus(o.status)}%;background:linear-gradient(90deg,var(--accent),#4aa3ff)"></div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-            <div class="actions">
-              <button class="tiny-btn" onclick="focusOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
-              <button class="tiny-btn" onclick="quickChangeStatus('${o.id}')"><i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-            <div style="width:120px">
-              <div style="height:8px;background:#eef6ff;border-radius:999px;overflow:hidden">
-                <div style="height:8px;width:${progressForStatus(o.status)}%;background:linear-gradient(90deg,var(--accent),#4aa3ff)"></div>
-              </div>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
 
-    function renderListByStatus(orders, status, containerId){
-      const container = $(containerId);
-      container.innerHTML = '';
-      const list = orders.filter(o=>o.status === status).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
-      if(list.length===0){
-        container.innerHTML = '<div class="muted">No orders in this section.</div>';
-        return;
-      }
-      list.forEach(o=>{
-        const leftColor = {
-          'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
-        }[o.status] || '#e6f2ff';
-        const d = document.createElement('div');
-        d.className = 'order';
-        d.innerHTML = `
-          <div class="left" style="background:${leftColor}"></div>
-          <div class="body">
-            <h3>${escapeHtml(o.title)}</h3>
-            <div class="meta">
-              ${statusBadgeHTML(o.status)}
-              <div class="small">Client: ${escapeHtml(o.client)}</div>
-              <div class="small">Assigned: ${o.assignedDate}</div>
-              <div class="small">Deadline: ${o.deadline}</div>
-              <div class="small">Cost: ${formatKsh(o.cost)}</div>
-            </div>
-            <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <select data-order="${o.id}" class="changeStatusSelect" aria-label="Change status">
-                <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
-                <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
-                <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
-                <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
-                <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
-              </select>
-              <button class="tiny-btn" onclick="focusOrder('${o.id}')">Details</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(d);
-      });
-    }
+function renderListByStatus(orders, status, containerId){
+  const container = $(containerId);
+  container.innerHTML = '';
+  const list = orders.filter(o=>o.status === status).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+  if(list.length===0){
+    container.innerHTML = '<div class="muted">No orders in this section.</div>';
+    return;
+  }
+  list.forEach(o=>{
+    const leftColor = {
+      'In Progress':'#ffedd5','In Review':'#ecfeff','Completed':'#ecfdf5','Cancelled':'#fff1f2','Revision':'#f5f3ff'
+    }[o.status] || '#e6f2ff';
+    const d = document.createElement('div');
+    d.className = 'order';
+    d.innerHTML = `
+      <div class="left" style="background:${leftColor}"></div>
+      <div class="body">
+        <h3>${escapeHtml(o.title)}</h3>
+        <div class="meta">
+          ${statusBadgeHTML(o.status)}
+          <div class="small">Client: ${escapeHtml(o.client)}</div>
+          <div class="small">Assigned: ${o.assignedDate}</div>
+          <div class="small">Deadline: ${o.deadline}</div>
+          <div class="small">Cost: ${formatKsh(o.cost)}</div>
+        </div>
+        <p class="muted">${o.notes ? escapeHtml(o.notes) : ''}</p>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <select data-order="${o.id}" class="changeStatusSelect" aria-label="Change status">
+            <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
+            <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
+            <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
+            <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
+            <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+          </select>
+          <button class="tiny-btn" onclick="focusOrder('${o.id}')">Details</button>
+          <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+    container.appendChild(d);
+  });
+}
 
-    function renderOrdersTable(orders, filter='', search=''){
-      const tbody = $('#ordersTBody');
-      tbody.innerHTML = '';
-      let list = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created));
-      if(filter) list = list.filter(o=>o.status === filter);
-      if(search) list = list.filter(o=> (o.title + ' ' + o.client).toLowerCase().includes(search.toLowerCase()));
-      if(list.length===0){
-        tbody.innerHTML = '<tr><td colspan="8" class="muted">No orders found</td></tr>';
-        return;
-      }
-      list.forEach(o=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(o.title)}</td>
-          <td>${escapeHtml(o.client)}</td>
-          <td>${o.assignedDate}</td>
-          <td>${o.deadline}</td>
-          <td>${o.pages}</td>
-          <td>${formatKsh(o.cost)}</td>
-          <td>${statusBadgeHTML(o.status)}</td>
-          <td>
-            <select data-order="${o.id}" class="tableChangeStatus" aria-label="Change status">
-              <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
-              <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
-              <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
-              <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
-              <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
-            </select>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+function renderOrdersTable(orders, filter='', search=''){
+  const tbody = $('#ordersTBody');
+  tbody.innerHTML = '';
+  let list = orders.slice().sort((a,b)=>new Date(b.created)-new Date(a.created));
+  if(filter) list = list.filter(o=>o.status === filter);
+  if(search) list = list.filter(o=> (o.title + ' ' + o.client).toLowerCase().includes(search.toLowerCase()));
+  if(list.length===0){
+    tbody.innerHTML = '<tr><td colspan="9" class="muted">No orders found</td></tr>';
+    return;
+  }
+  list.forEach(o=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(o.title)}</td>
+      <td>${escapeHtml(o.client)}</td>
+      <td>${o.assignedDate}</td>
+      <td>${o.deadline}</td>
+      <td>${o.pages}</td>
+      <td>${formatKsh(o.cost)}</td>
+      <td>${statusBadgeHTML(o.status)}</td>
+      <td>
+        <select data-order="${o.id}" class="tableChangeStatus" aria-label="Change status">
+          <option value="In Progress" ${o.status==='In Progress'?'selected':''}>In Progress</option>
+          <option value="In Review" ${o.status==='In Review'?'selected':''}>In Review</option>
+          <option value="Revision" ${o.status==='Revision'?'selected':''}>Revision</option>
+          <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
+          <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+        </select>
+      </td>
+      <td>
+        <button class="tiny-btn" onclick="focusOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
+        <button class="tiny-btn" onclick="quickChangeStatus('${o.id}')"><i class="fa-solid fa-arrow-right"></i></button>
+        <button class="tiny-btn" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-    // small helpers
-    function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+// small helpers
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-    // Quick focus + details (could be expanded into a modal)
-    window.focusOrder = function(id){
-      const orders = loadOrders();
-      const ord = orders.find(o=>o.id===id);
-      if(!ord) return alert('Order not found');
-      const message = `
+// Quick focus + details (could be expanded into a modal)
+window.focusOrder = function(id){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return alert('Order not found');
+  const message = `
 Title: ${ord.title}
 Client: ${ord.client}
 Status: ${ord.status}
@@ -674,166 +681,167 @@ Pages: ${ord.pages}
 Cost: ${formatKsh(ord.cost)}
 Notes: ${ord.notes || '-'}
 Created: ${new Date(ord.created).toLocaleString()}
-      `;
-      alert(message);
+  `;
+  alert(message);
+};
+
+// Quick status change helper for recent list (cycles forward)
+window.quickChangeStatus = function(id){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return;
+  const orderFlow = ['In Progress','In Review','Revision','Completed'];
+  const idx = orderFlow.indexOf(ord.status);
+  const next = orderFlow[Math.min(idx+1, orderFlow.length-1)] || 'In Progress';
+  changeOrderStatus(id, next, 'user quick change');
+};
+
+// Change status by id
+function changeOrderStatus(id, newStatus, by='user'){
+  const orders = loadOrders();
+  const ord = orders.find(o=>o.id===id);
+  if(!ord) return;
+  ord.status = newStatus;
+  ord.history.push({at: new Date().toISOString(), by, note:`Status changed to ${newStatus}`, status:newStatus});
+  saveOrders(orders);
+  refreshUI();
+}
+
+// Delete order by id
+window.deleteOrder = function(id){
+  if(!confirm("Are you sure you want to delete this order?")) return;
+  let orders = loadOrders();
+  orders = orders.filter(o => o.id !== id);
+  saveOrders(orders);
+  refreshUI();
+};
+
+// Event listeners & wiring
+function attachEvents(){
+  // Nav click
+  $$('.nav button.nav-item').forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const view = b.dataset.view;
+      setActiveNav(view);
+    });
+  });
+
+  // Open create modal
+  $('#openCreate').addEventListener('click', ()=> openModal());
+  $('#cancelCreate').addEventListener('click', ()=> closeModal());
+
+  // modal backdrop close when clicking outside
+  $('#modalBackdrop').addEventListener('click', (e)=>{
+    if(e.target === $('#modalBackdrop')) closeModal();
+  });
+
+  // profile toggle
+  $('#profileBtn').addEventListener('click', (e)=>{
+    $('#profileMenu').classList.toggle('show');
+  });
+
+  // logout simulated
+  $('#logoutBtn').addEventListener('click', ()=> { alert('Logged out (demo)'); });
+
+  // create form submit
+  $('#orderForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+      title: form.title.value.trim(),
+      assignedDate: form.assignedDate.value,
+      deadline: form.deadline.value,
+      pages: form.pages.value,
+      costPerPage: form.costPerPage.value,
+      client: form.client.value.trim(),
+      notes: form.notes.value.trim()
     };
-
-    // Quick status change helper for recent list (cycles forward)
-    window.quickChangeStatus = function(id){
-      const orders = loadOrders();
-      const ord = orders.find(o=>o.id===id);
-      if(!ord) return;
-      const orderFlow = ['In Progress','In Review','Revision','Completed'];
-      const idx = orderFlow.indexOf(ord.status);
-      const next = orderFlow[Math.min(idx+1, orderFlow.length-1)] || 'In Progress';
-      changeOrderStatus(id, next, 'user quick change');
-    };
-
-    // Change status by id
-    function changeOrderStatus(id, newStatus, by='user'){
-      const orders = loadOrders();
-      const ord = orders.find(o=>o.id===id);
-      if(!ord) return;
-      ord.status = newStatus;
-      ord.history.push({at: new Date().toISOString(), by, note:`Status changed to ${newStatus}`, status:newStatus});
-      saveOrders(orders);
-      refreshUI();
+    if(!data.title || !data.assignedDate || !data.deadline || !data.pages || !data.costPerPage || !data.client){
+      return alert('Please fill required fields.');
     }
+    const ord = createOrder(data);
+    const orders = loadOrders();
+    orders.push(ord);
+    saveOrders(orders);
+    closeModal();
+    setActiveNav('inprogress');
+    refreshUI();
+  });
 
-    // Event listeners & wiring
-    function attachEvents(){
-      // Nav click
-      $$('.nav button.nav-item').forEach(b=>{
-        b.addEventListener('click', ()=> {
-          const view = b.dataset.view;
-          setActiveNav(view);
-          // ensure selected view exists
-          // nothing else needed; render done by refreshUI
-        });
-      });
+  // Search/filter in orders table
+  $('#searchOrders').addEventListener('input', (e)=>{
+    renderOrdersTable(loadOrders(), $('#filterStatus').value, e.target.value.trim());
+  });
+  $('#filterStatus').addEventListener('change', ()=> {
+    renderOrdersTable(loadOrders(), $('#filterStatus').value, $('#searchOrders').value.trim());
+  });
 
-      // Open create modal
-      $('#openCreate').addEventListener('click', ()=> openModal());
-
-      $('#cancelCreate').addEventListener('click', ()=> closeModal());
-
-      // modal backdrop close when clicking outside
-      $('#modalBackdrop').addEventListener('click', (e)=>{
-        if(e.target === $('#modalBackdrop')) closeModal();
-      });
-
-      // profile toggle
-      $('#profileBtn').addEventListener('click', (e)=>{
-        $('#profileMenu').classList.toggle('show');
-      });
-
-      // logout simulated
-      $('#logoutBtn').addEventListener('click', ()=> { alert('Logged out (demo)'); });
-
-      // create form submit
-      $('#orderForm').addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const form = e.target;
-        const data = {
-          title: form.title.value.trim(),
-          assignedDate: form.assignedDate.value,
-          deadline: form.deadline.value,
-          pages: form.pages.value,
-          costPerPage: form.costPerPage.value,
-          client: form.client.value.trim(),
-          notes: form.notes.value.trim()
-        };
-        // basic validation
-        if(!data.title || !data.assignedDate || !data.deadline || !data.pages || !data.costPerPage || !data.client){
-          return alert('Please fill required fields.');
-        }
-        const ord = createOrder(data);
-        const orders = loadOrders();
-        orders.push(ord);
-        saveOrders(orders);
-        closeModal();
-        setActiveNav('inprogress'); // go to inprogress after creating
-        refreshUI();
-      });
-
-      // Search/filter in orders table
-      $('#searchOrders').addEventListener('input', (e)=>{
-        renderOrdersTable(loadOrders(), $('#filterStatus').value, e.target.value.trim());
-      });
-      $('#filterStatus').addEventListener('change', ()=> {
-        renderOrdersTable(loadOrders(), $('#filterStatus').value, $('#searchOrders').value.trim());
-      });
-
-      // Delegated event listeners for selects in lists & table
-      document.addEventListener('change', (e)=>{
-        if(e.target.matches('.changeStatusSelect, .tableChangeStatus')){
-          const id = e.target.dataset.order;
-          const newStatus = e.target.value;
-          changeOrderStatus(id, newStatus, 'user change');
-        }
-      });
+  // Delegated event listeners for selects in lists & table
+  document.addEventListener('change', (e)=>{
+    if(e.target.matches('.changeStatusSelect, .tableChangeStatus')){
+      const id = e.target.dataset.order;
+      const newStatus = e.target.value;
+      changeOrderStatus(id, newStatus, 'user change');
     }
+  });
+}
 
-    // Modal controls
-    function openModal(){
-      $('#modalBackdrop').classList.add('show');
-      $('#modalBackdrop').setAttribute('aria-hidden','false');
-      // set default assigned date to today
-      const today = new Date().toISOString().slice(0,10);
-      $('#assignedDate').value = today;
-      // set default deadline 3 days ahead
-      const then = new Date(); then.setDate(then.getDate()+3);
-      $('#deadline').value = then.toISOString().slice(0,10);
-    }
-    function closeModal(){
-      $('#modalBackdrop').classList.remove('show');
-      $('#modalBackdrop').setAttribute('aria-hidden','true');
-      $('#orderForm').reset();
-    }
+// Modal controls
+function openModal(){
+  $('#modalBackdrop').classList.add('show');
+  $('#modalBackdrop').setAttribute('aria-hidden','false');
+  const today = new Date().toISOString().slice(0,10);
+  $('#assignedDate').value = today;
+  const then = new Date(); then.setDate(then.getDate()+3);
+  $('#deadline').value = then.toISOString().slice(0,10);
+}
+function closeModal(){
+  $('#modalBackdrop').classList.remove('show');
+  $('#modalBackdrop').setAttribute('aria-hidden','true');
+  $('#orderForm').reset();
+}
 
-    // Seed some demo orders if none exist (for fast testing)
-    function seedDemoIfEmpty(){
-      const orders = loadOrders();
-      if(orders.length === 0){
-        const sample = [
-          {title:'Literature Review on AI Ethics', assignedDate: todayAdd(-2), deadline: todayAdd(3), pages:5, costPerPage:250, client:'Adamu', notes:'Include 5 refs', status:'In Progress'},
-          {title:'Methodology Chapter', assignedDate: todayAdd(-4), deadline: todayAdd(1), pages:6, costPerPage:220, client:'Beatrice', notes:'APA 7', status:'In Review'},
-          {title:'Final Edits and Proofread', assignedDate: todayAdd(-8), deadline: todayAdd(-1), pages:3, costPerPage:200, client:'Chalo', notes:'Urgent', status:'Completed'}
-        ].map(s=>{
-          const o = createOrder(s);
-          o.pages = s.pages; o.costPerPage = s.costPerPage; o.cost = s.pages * s.costPerPage; o.status = s.status;
-          o.history.push({at:new Date().toISOString(), by:'seed', note:'Seeded order', status:o.status});
-          return o;
-        });
-        saveOrders(sample);
-      }
-    }
-    function todayAdd(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+// Seed some demo orders if none exist (for fast testing)
+function seedDemoIfEmpty(){
+  const orders = loadOrders();
+  if(orders.length === 0){
+    const sample = [
+      {title:'Literature Review on AI Ethics', assignedDate: todayAdd(-2), deadline: todayAdd(3), pages:5, costPerPage:250, client:'Adamu', notes:'Include 5 refs', status:'In Progress'},
+      {title:'Methodology Chapter', assignedDate: todayAdd(-4), deadline: todayAdd(1), pages:6, costPerPage:220, client:'Beatrice', notes:'APA 7', status:'In Review'},
+      {title:'Final Edits and Proofread', assignedDate: todayAdd(-8), deadline: todayAdd(-1), pages:3, costPerPage:200, client:'Chalo', notes:'Urgent', status:'Completed'}
+    ].map(s=>{
+      const o = createOrder(s);
+      o.pages = s.pages; o.costPerPage = s.costPerPage; o.cost = s.pages * s.costPerPage; o.status = s.status;
+      o.history.push({at:new Date().toISOString(), by:'seed', note:'Seeded order', status:o.status});
+      return o;
+    });
+    saveOrders(sample);
+  }
+}
+function todayAdd(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
 
-    // Full refresh
-    function refreshUI(){
-      const orders = loadOrders();
-      summarizeCounts(orders);
-      renderRecent(orders);
-      renderListByStatus(orders, 'In Progress', '#inprogressList');
-      renderListByStatus(orders, 'In Review', '#inreviewList');
-      renderListByStatus(orders, 'Completed', '#completedList');
-      renderListByStatus(orders, 'Cancelled', '#cancelledList');
-      renderOrdersTable(orders, $('#filterStatus').value, $('#searchOrders').value.trim());
-    }
+// Full refresh
+function refreshUI(){
+  const orders = loadOrders();
+  summarizeCounts(orders);
+  renderRecent(orders);
+  renderListByStatus(orders, 'In Progress', '#inprogressList');
+  renderListByStatus(orders, 'In Review', '#inreviewList');
+  renderListByStatus(orders, 'Completed', '#completedList');
+  renderListByStatus(orders, 'Cancelled', '#cancelledList');
+  renderOrdersTable(orders, $('#filterStatus').value, $('#searchOrders').value.trim());
+}
 
-    // Initialization
-    (function init(){
-      attachEvents();
-      seedDemoIfEmpty();
-      refreshUI();
-      setActiveNav('dashboard');
-      // keyboard escape to close modal
-      document.addEventListener('keydown', (e)=> {
-        if(e.key === 'Escape') { closeModal(); $('#profileMenu').classList.remove('show'); }
-      });
-    })();
-
-  </script>
+// Initialization
+(function init(){
+  attachEvents();
+  seedDemoIfEmpty();
+  refreshUI();
+  setActiveNav('dashboard');
+  document.addEventListener('keydown', (e)=> {
+    if(e.key === 'Escape') { closeModal(); $('#profileMenu').classList.remove('show'); }
+  });
+})();
+</script>
 </body>
 </html>
