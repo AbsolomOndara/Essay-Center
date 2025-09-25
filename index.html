@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay Center | Professional Task Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a3a5f;
+            --primary-light: #2a4a6f;
+            --secondary: #ffffff;
+            --accent: #4a90e2;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --bg-light: #f5f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: var(--secondary);
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--accent);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .user-profile {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .user-info p {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Cards and Containers */
+        .card {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-info {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #e3f2fd;
+            color: var(--primary);
+        }
+
+        .status-completed {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+
+        .status-revision {
+            background-color: #fff3e0;
+            color: var(--warning);
+        }
+
+        .status-cancelled {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+
+        .status-paid {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+
+        .status-submitted {
+            background-color: #e3f2fd;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            height: 100vh;
+            background-color: var(--primary);
+        }
+
+        .login-info {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .login-info ul {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .login-info li {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .login-form-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--secondary);
+        }
+
+        .login-card {
+            width: 400px;
+            padding: 30px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .login-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .login-tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        /* Rating System */
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #ddd;
+        }
+
+        .rating input:checked ~ label {
+            color: #ffc107;
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #ffc107;
+        }
+
+        /* Dashboard Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Order Details Modal */
+        .order-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .order-details h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-info {
+                padding: 20px;
+            }
+            
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-header h2, .sidebar-menu span, .user-info {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .user-profile {
+                justify-content: center;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Content Layout Improvements */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-info">
+            <h2>Essay Center</h2>
+            <p>Professional Academic Writing Services</p>
+            <p>We provide high-quality academic writing services with a team of experienced writers and strict quality control processes.</p>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> 100% Original Content</li>
+                <li><i class="fas fa-check-circle"></i> On-Time Delivery</li>
+                <li><i class="fas fa-check-circle"></i> Professional Writers</li>
+                <li><i class="fas fa-check-circle"></i> 24/7 Customer Support</li>
+                <li><i class="fas fa-check-circle"></i> Money-Back Guarantee</li>
+            </ul>
+            <p>Join our team of professional writers or manage your academic writing business with our comprehensive platform.</p>
+        </div>
+        <div class="login-form-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>Essay Center</h2>
+                    <p>Professional Task Management System</p>
+                </div>
+                <div class="login-tabs">
+                    <div class="login-tab active" onclick="showLoginForm('writer')">Writer Login</div>
+                    <div class="login-tab" onclick="showLoginForm('admin')">Admin Login</div>
+                </div>
+                <form id="writerLoginForm" class="login-form active">
+                    <div class="form-group">
+                        <label for="writerEmail">Email</label>
+                        <input type="email" id="writerEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="writerPassword">Password</label>
+                        <input type="password" id="writerPassword" class="form-control" placeholder="Enter your password">
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="login('writer')">Login as Writer</button>
+                    <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
+                        Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a>
+                    </p>
+                </form>
+                <form id="adminLoginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="adminEmail">Email</label>
+                        <input type="email" id="adminEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="Enter your password">
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="login('admin')">Login as Admin</button>
+                </form>
+                <form id="signupForm" class="login-form">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-control" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPhone">Phone Number</label>
+                        <input type="tel" id="signupPhone" class="form-control" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-control" placeholder="Create a password">
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="signup()">Create Account</button>
+                    <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
+                        Already have an account? <a href="#" onclick="showLoginForm('writer')">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (Initially Hidden) -->
+    <div id="appContainer" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Essay Center</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="#" onclick="showSection('activeOrders')"><i class="fas fa-tasks"></i> <span>Active Orders</span></a></li>
+                    <li><a href="#" onclick="showSection('completedOrders')"><i class="fas fa-check-circle"></i> <span>Completed Orders</span></a></li>
+                    <li id="adminSection" style="display: none;"><a href="#" onclick="showSection('addOrder')"><i class="fas fa-plus-circle"></i> <span>Add New Order</span></a></li>
+                    <li><a href="#" onclick="showSection('profile')"><i class="fas fa-user"></i> <span>Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <div class="user-info">
+                    <h4 id="userName">John Doe</h4>
+                    <p id="userRole">Writer</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <i class="fas fa-tasks" style="font-size: 2rem; color: var(--primary);"></i>
+                        <div class="stat-value" id="activeOrdersCount">0</div>
+                        <div class="stat-label">Active Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success);"></i>
+                        <div class="stat-value" id="completedOrdersCount">0</div>
+                        <div class="stat-label">Completed Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; color: var(--warning);"></i>
+                        <div class="stat-value" id="revisionOrdersCount">0</div>
+                        <div class="stat-label">Orders in Revision</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-dollar-sign" style="font-size: 2rem; color: var(--success);"></i>
+                        <div class="stat-value" id="totalEarnings">$0</div>
+                        <div class="stat-label">Total Earnings</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 2rem; color: var(--accent);"></i>
+                        <div class="stat-value" id="paidOrdersCount">0</div>
+                        <div class="stat-label">Paid Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock" style="font-size: 2rem; color: var(--warning);"></i>
+                        <div class="stat-value" id="pendingPaymentCount">0</div>
+                        <div class="stat-label">Pending Payment</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Orders</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order Title</th>
+                                <th>Client</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersTable">
+                            <!-- Recent orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Orders Section -->
+            <div id="activeOrders" class="section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Active Orders</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order Title</th>
+                                <th>Client</th>
+                                <th>Pages</th>
+                                <th>Amount</th>
+                                <th>Assigned Date</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeOrdersTable">
+                            <!-- Active orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Completed Orders Section -->
+            <div id="completedOrders" class="section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Completed Orders</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order Title</th>
+                                <th>Client</th>
+                                <th>Pages</th>
+                                <th>Amount</th>
+                                <th>Completed Date</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Rating</th>
+                                <th>Review</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedOrdersTable">
+                            <!-- Completed orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add New Order Section (Admin Only) -->
+            <div id="addOrder" class="section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Add New Order</h2>
+                    </div>
+                    <form id="addOrderForm">
+                        <div class="form-group">
+                            <label for="orderTitle">Order Title</label>
+                            <input type="text" id="orderTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientName">Client Name</label>
+                            <input type="text" id="clientName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pages">Number of Pages</label>
+                            <input type="number" id="pages" class="form-control" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount ($)</label>
+                            <input type="number" id="amount" class="form-control" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline">Deadline</label>
+                            <input type="date" id="deadline" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="writerSelect">Assign to Writer</label>
+                            <select id="writerSelect" class="form-control" required>
+                                <!-- Writers will be populated here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="instructions">Instructions</label>
+                            <textarea id="instructions" class="form-control" placeholder="Detailed instructions for the writer"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Order</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile" class="section" style="display: none;">
+                <div class="profile-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Profile Information</h2>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileName">Full Name</label>
+                            <input type="text" id="profileName" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">Email</label>
+                            <input type="email" id="profileEmail" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePhone">Phone Number</label>
+                            <input type="tel" id="profilePhone" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileRole">Role</label>
+                            <input type="text" id="profileRole" class="form-control" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Performance Summary</h2>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Orders Completed</label>
+                            <input type="text" id="performanceCompleted" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Average Rating</label>
+                            <input type="text" id="performanceRating" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Earnings</label>
+                            <input type="text" id="performanceEarnings" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>On-Time Delivery Rate</label>
+                            <input type="text" id="performanceOntime" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="orderDetailsTitle">Order Details</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="orderDetailsContent">
+                <!-- Order details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Rate Completed Order</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">★</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reviewText">Review</label>
+                <textarea id="reviewText" class="form-control" rows="3" placeholder="Enter your review"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="submitRating()">Submit Rating</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample data storage (in a real app, this would be on a server)
+        let users = JSON.parse(localStorage.getItem('essayCenterUsers')) || [];
+        let orders = JSON.parse(localStorage.getItem('essayCenterOrders')) || [];
+        let currentUser = null;
+        let currentOrderToRate = null;
+        let currentOrderDetails = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('essayCenterCurrentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+            }
+            
+            // Add sample data if none exists
+            if (users.length === 0) {
+                users = [
+                    {
+                        id: 1,
+                        name: "Admin User",
+                        email: "admin@essaycenter.com",
+                        phone: "123-456-7890",
+                        password: "admin123",
+                        role: "admin"
+                    },
+                    {
+                        id: 2,
+                        name: "John Writer",
+                        email: "writer@essaycenter.com",
+                        phone: "987-654-3210",
+                        password: "writer123",
+                        role: "writer"
+                    },
+                    {
+                        id: 3,
+                        name: "Jane Smith",
+                        email: "jane@essaycenter.com",
+                        phone: "555-123-4567",
+                        password: "jane123",
+                        role: "writer"
+                    }
+                ];
+                localStorage.setItem('essayCenterUsers', JSON.stringify(users));
+            }
+            
+            if (orders.length === 0) {
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const nextWeek = new Date(today);
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                
+                orders = [
+                    {
+                        id: 1,
+                        title: "Research Paper on AI Ethics",
+                        client: "University of Technology",
+                        pages: 10,
+                        amount: 150.00,
+                        assignedDate: today.toISOString().split('T')[0],
+                        deadline: nextWeek.toISOString().split('T')[0],
+                        status: "active",
+                        paymentStatus: "pending",
+                        writerId: 2,
+                        instructions: "Please write a comprehensive research paper on AI ethics covering topics such as bias in algorithms, privacy concerns, and the impact of AI on employment. Use at least 10 academic sources and follow APA formatting guidelines."
+                    },
+                    {
+                        id: 2,
+                        title: "Business Case Study Analysis",
+                        client: "Global Corp Inc",
+                        pages: 5,
+                        amount: 75.00,
+                        assignedDate: "2023-06-01",
+                        deadline: "2023-06-10",
+                        status: "completed",
+                        paymentStatus: "paid",
+                        writerId: 2,
+                        completedDate: "2023-06-08",
+                        rating: 5,
+                        review: "Excellent work, delivered ahead of schedule!",
+                        instructions: "Analyze the business case study provided and provide recommendations for improvement. Focus on strategic management and operational efficiency."
+                    },
+                    {
+                        id: 3,
+                        title: "Literary Analysis of Shakespeare's Hamlet",
+                        client: "Literature Department",
+                        pages: 8,
+                        amount: 120.00,
+                        assignedDate: today.toISOString().split('T')[0],
+                        deadline: tomorrow.toISOString().split('T')[0],
+                        status: "submitted",
+                        paymentStatus: "pending",
+                        writerId: 3,
+                        instructions: "Provide a detailed analysis of the character development in Hamlet, focusing on the protagonist's internal conflict and its relation to the play's themes."
+                    }
+                ];
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+            }
+            
+            // Set up event listeners
+            document.getElementById('addOrderForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNewOrder();
+            });
+            
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Show login form based on role
+        function showLoginForm(role) {
+            document.querySelectorAll('.login-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+            
+            if (role === 'writer') {
+                document.querySelector('.login-tab:nth-child(1)').classList.add('active');
+                document.getElementById('writerLoginForm').classList.add('active');
+            } else {
+                document.querySelector('.login-tab:nth-child(2)').classList.add('active');
+                document.getElementById('adminLoginForm').classList.add('active');
+            }
+        }
+
+        // Show signup form
+        function showSignupForm() {
+            document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+            document.getElementById('signupForm').classList.add('active');
+        }
+
+        // Login function
+        function login(role) {
+            let email, password;
+            
+            if (role === 'writer') {
+                email = document.getElementById('writerEmail').value;
+                password = document.getElementById('writerPassword').value;
+            } else {
+                email = document.getElementById('adminEmail').value;
+                password = document.getElementById('adminPassword').value;
+            }
+            
+            // Validate inputs
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password && u.role === role);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('essayCenterCurrentUser', JSON.stringify(user));
+                showApp();
+            } else {
+                alert('Invalid credentials or role mismatch');
+            }
+        }
+
+        // Signup function
+        function signup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            // Validate inputs
+            if (!name || !email || !phone || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Check if email already exists
+            if (users.find(u => u.email === email)) {
+                alert('Email already registered');
+                return;
+            }
+            
+            // Create new user (always as writer for signup)
+            const newUser = {
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                name,
+                email,
+                phone,
+                password,
+                role: 'writer'
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('essayCenterUsers', JSON.stringify(users));
+            
+            alert('Account created successfully! Please login.');
+            showLoginForm('writer');
+        }
+
+        // Show the main application
+        function showApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            
+            // Update user info in sidebar
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            document.getElementById('userAvatar').textContent = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            // Update profile information
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profilePhone').value = currentUser.phone;
+            document.getElementById('profileRole').value = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            
+            // Show/hide admin section based on role
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminSection').style.display = 'block';
+                // Populate writer dropdown for admin
+                populateWriterDropdown();
+            } else {
+                document.getElementById('adminSection').style.display = 'none';
+                // Calculate performance metrics for writer
+                calculatePerformanceMetrics();
+            }
+            
+            // Load initial data
+            updateDashboard();
+            loadActiveOrders();
+            loadCompletedOrders();
+        }
+
+        // Populate writer dropdown for admin
+        function populateWriterDropdown() {
+            const writerSelect = document.getElementById('writerSelect');
+            writerSelect.innerHTML = '';
+            
+            const writers = users.filter(user => user.role === 'writer');
+            writers.forEach(writer => {
+                const option = document.createElement('option');
+                option.value = writer.id;
+                option.textContent = writer.name;
+                writerSelect.appendChild(option);
+            });
+        }
+
+        // Calculate performance metrics for writer
+        function calculatePerformanceMetrics() {
+            if (currentUser.role !== 'writer') return;
+            
+            const writerOrders = orders.filter(order => order.writerId === currentUser.id);
+            const completedOrders = writerOrders.filter(order => order.status === 'completed');
+            const paidOrders = writerOrders.filter(order => order.paymentStatus === 'paid');
+            
+            // Total completed orders
+            document.getElementById('performanceCompleted').value = completedOrders.length;
+            
+            // Average rating
+            const ratedOrders = completedOrders.filter(order => order.rating);
+            const avgRating = ratedOrders.length > 0 ? 
+                (ratedOrders.reduce((sum, order) => sum + order.rating, 0) / ratedOrders.length).toFixed(1) : 
+                'No ratings yet';
+            document.getElementById('performanceRating').value = avgRating;
+            
+            // Total earnings
+            const totalEarnings = paidOrders.reduce((sum, order) => sum + order.amount, 0);
+            document.getElementById('performanceEarnings').value = `$${totalEarnings.toFixed(2)}`;
+            
+            // On-time delivery rate
+            const onTimeOrders = completedOrders.filter(order => {
+                const completedDate = new Date(order.completedDate);
+                const deadline = new Date(order.deadline);
+                return completedDate <= deadline;
+            });
+            const onTimeRate = completedOrders.length > 0 ? 
+                `${Math.round((onTimeOrders.length / completedOrders.length) * 100)}%` : 
+                'No completed orders';
+            document.getElementById('performanceOntime').value = onTimeRate;
+        }
+
+        // Show different sections
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active class from all menu items
+            document.querySelectorAll('.sidebar-menu a').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Set active class on clicked menu item
+            event.target.closest('a').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard',
+                activeOrders: 'Active Orders',
+                completedOrders: 'Completed Orders',
+                addOrder: 'Add New Order',
+                profile: 'Profile'
+            };
+            
+            document.getElementById('pageTitle').textContent = titles[sectionId];
+            
+            // Refresh data if needed
+            if (sectionId === 'dashboard') {
+                updateDashboard();
+            } else if (sectionId === 'activeOrders') {
+                loadActiveOrders();
+            } else if (sectionId === 'completedOrders') {
+                loadCompletedOrders();
+            } else if (sectionId === 'addOrder' && currentUser.role === 'admin') {
+                populateWriterDropdown();
+            } else if (sectionId === 'profile' && currentUser.role === 'writer') {
+                calculatePerformanceMetrics();
+            }
+        }
+
+        // Update dashboard with stats and recent orders
+        function updateDashboard() {
+            // Filter orders based on user role
+            let userOrders = orders;
+            if (currentUser.role === 'writer') {
+                userOrders = orders.filter(order => order.writerId === currentUser.id);
+            }
+            
+            // Calculate stats
+            const activeOrders = userOrders.filter(order => order.status === 'active').length;
+            const completedOrders = userOrders.filter(order => order.status === 'completed').length;
+            const revisionOrders = userOrders.filter(order => order.status === 'revision').length;
+            const submittedOrders = userOrders.filter(order => order.status === 'submitted').length;
+            const paidOrders = userOrders.filter(order => order.paymentStatus === 'paid').length;
+            const pendingPayment = userOrders.filter(order => 
+                (order.status === 'completed' || order.status === 'submitted') && 
+                order.paymentStatus === 'pending'
+            ).length;
+            
+            const totalEarnings = userOrders
+                .filter(order => order.paymentStatus === 'paid')
+                .reduce((sum, order) => sum + order.amount, 0);
+            
+            // Update stats
+            document.getElementById('activeOrdersCount').textContent = activeOrders;
+            document.getElementById('completedOrdersCount').textContent = completedOrders;
+            document.getElementById('revisionOrdersCount').textContent = revisionOrders;
+            document.getElementById('totalEarnings').textContent = `$${totalEarnings.toFixed(2)}`;
+            document.getElementById('paidOrdersCount').textContent = paidOrders;
+            document.getElementById('pendingPaymentCount').textContent = pendingPayment;
+            
+            // Update recent orders table
+            const recentOrdersTable = document.getElementById('recentOrdersTable');
+            recentOrdersTable.innerHTML = '';
+            
+            // Get recent orders (last 5)
+            const recentOrders = userOrders
+                .sort((a, b) => new Date(b.assignedDate) - new Date(a.assignedDate))
+                .slice(0, 5);
+            
+            recentOrders.forEach(order => {
+                const row = document.createElement('tr');
+                
+                // Format deadline for display
+                const deadline = new Date(order.deadline);
+                const today = new Date();
+                const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+                
+                let statusBadge = '';
+                if (order.status === 'active') {
+                    statusBadge = `<span class="status-badge status-active">Active (${daysLeft} days left)</span>`;
+                } else if (order.status === 'completed') {
+                    statusBadge = '<span class="status-badge status-completed">Completed</span>';
+                } else if (order.status === 'revision') {
+                    statusBadge = '<span class="status-badge status-revision">Revision</span>';
+                } else if (order.status === 'submitted') {
+                    statusBadge = '<span class="status-badge status-submitted">Submitted</span>';
+                } else if (order.status === 'cancelled') {
+                    statusBadge = '<span class="status-badge status-cancelled">Cancelled</span>';
+                }
+                
+                let paymentBadge = '';
+                if (order.paymentStatus === 'paid') {
+                    paymentBadge = '<span class="status-badge status-paid">Paid</span>';
+                } else {
+                    paymentBadge = '<span class="status-badge status-active">Pending</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${order.title}</td>
+                    <td>${order.client}</td>
+                    <td>${deadline.toLocaleDateString()}</td>
+                    <td>${statusBadge}</td>
+                    <td>${paymentBadge}</td>
+                    <td class="action-buttons">
+                        ${currentUser.role === 'writer' && order.status === 'active' ? 
+                            `<button class="action-btn btn-success" onclick="submitOrder(${order.id})">Submit</button>
+                             <button class="action-btn btn-info" onclick="viewOrderDetails(${order.id})">View</button>` : 
+                         currentUser.role === 'admin' ? 
+                            `<button class="action-btn btn-info" onclick="viewOrderDetails(${order.id})">View</button>
+                             ${order.status === 'submitted' ? 
+                                `<button class="action-btn btn-success" onclick="markOrderComplete(${order.id})">Complete</button>
+                                 <button class="action-btn btn-warning" onclick="markOrderRevision(${order.id})">Revision</button>
+                                 <button class="action-btn btn-danger" onclick="markOrderCancelled(${order.id})">Cancel</button>` : 
+                             order.status === 'completed' && order.paymentStatus === 'pending' ? 
+                                `<button class="action-btn btn-primary" onclick="markOrderPaid(${order.id})">Mark Paid</button>` : 
+                             ''}
+                             <button class="action-btn btn-danger" onclick="deleteOrder(${order.id})">Delete</button>` : 
+                         ''}
+                        ${order.paymentStatus === 'paid' ? 
+                            `<button class="action-btn btn-info" onclick="downloadInvoice(${order.id})">Invoice</button>` : 
+                         ''}
+                    </td>
+                `;
+                
+                recentOrdersTable.appendChild(row);
+            });
+        }
+
+        // Load active orders
+        function loadActiveOrders() {
+            const activeOrdersTable = document.getElementById('activeOrdersTable');
+            activeOrdersTable.innerHTML = '';
+            
+            // Filter orders based on user role
+            let userOrders = orders.filter(order => 
+                order.status === 'active' || order.status === 'submitted' || order.status === 'revision'
+            );
+            if (currentUser.role === 'writer') {
+                userOrders = userOrders.filter(order => order.writerId === currentUser.id);
+            }
+            
+            userOrders.forEach(order => {
+                const row = document.createElement('tr');
+                
+                // Format dates for display
+                const assignedDate = new Date(order.assignedDate);
+                const deadline = new Date(order.deadline);
+                const today = new Date();
+                const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+                
+                let statusBadge = '';
+                if (order.status === 'active') {
+                    statusBadge = `<span class="status-badge status-active">Active (${daysLeft} days left)</span>`;
+                } else if (order.status === 'submitted') {
+                    statusBadge = '<span class="status-badge status-submitted">Submitted</span>';
+                } else if (order.status === 'revision') {
+                    statusBadge = '<span class="status-badge status-revision">Revision</span>';
+                }
+                
+                let paymentBadge = '';
+                if (order.paymentStatus === 'paid') {
+                    paymentBadge = '<span class="status-badge status-paid">Paid</span>';
+                } else {
+                    paymentBadge = '<span class="status-badge status-active">Pending</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${order.title}</td>
+                    <td>${order.client}</td>
+                    <td>${order.pages}</td>
+                    <td>$${order.amount.toFixed(2)}</td>
+                    <td>${assignedDate.toLocaleDateString()}</td>
+                    <td>${deadline.toLocaleDateString()}</td>
+                    <td>${statusBadge}</td>
+                    <td>${paymentBadge}</td>
+                    <td class="action-buttons">
+                        ${currentUser.role === 'writer' && order.status === 'active' ? 
+                            `<button class="action-btn btn-success" onclick="submitOrder(${order.id})">Submit</button>
+                             <button class="action-btn btn-info" onclick="viewOrderDetails(${order.id})">View</button>` : 
+                         currentUser.role === 'admin' ? 
+                            `<button class="action-btn btn-info" onclick="viewOrderDetails(${order.id})">View</button>
+                             ${order.status === 'submitted' ? 
+                                `<button class="action-btn btn-success" onclick="markOrderComplete(${order.id})">Complete</button>
+                                 <button class="action-btn btn-warning" onclick="markOrderRevision(${order.id})">Revision</button>
+                                 <button class="action-btn btn-danger" onclick="markOrderCancelled(${order.id})">Cancel</button>` : 
+                             order.status === 'completed' && order.paymentStatus === 'pending' ? 
+                                `<button class="action-btn btn-primary" onclick="markOrderPaid(${order.id})">Mark Paid</button>` : 
+                             ''}
+                             <button class="action-btn btn-danger" onclick="deleteOrder(${order.id})">Delete</button>` : 
+                         ''}
+                        ${order.paymentStatus === 'paid' ? 
+                            `<button class="action-btn btn-info" onclick="downloadInvoice(${order.id})">Invoice</button>` : 
+                         ''}
+                    </td>
+                `;
+                
+                activeOrdersTable.appendChild(row);
+            });
+        }
+
+        // Load completed orders
+        function loadCompletedOrders() {
+            const completedOrdersTable = document.getElementById('completedOrdersTable');
+            completedOrdersTable.innerHTML = '';
+            
+            // Filter orders based on user role
+            let userOrders = orders.filter(order => order.status === 'completed' || order.status === 'cancelled');
+            if (currentUser.role === 'writer') {
+                userOrders = userOrders.filter(order => order.writerId === currentUser.id);
+            }
+            
+            userOrders.forEach(order => {
+                const row = document.createElement('tr');
+                
+                // Format completed date for display
+                const completedDate = order.completedDate ? new Date(order.completedDate) : null;
+                
+                // Create star rating display
+                let ratingStars = '';
+                if (order.rating) {
+                    for (let i = 0; i < 5; i++) {
+                        if (i < order.rating) {
+                            ratingStars += '★';
+                        } else {
+                            ratingStars += '☆';
+                        }
+                    }
+                } else {
+                    ratingStars = 'Not rated yet';
+                }
+                
+                let statusBadge = '';
+                if (order.status === 'completed') {
+                    statusBadge = '<span class="status-badge status-completed">Completed</span>';
+                } else if (order.status === 'cancelled') {
+                    statusBadge = '<span class="status-badge status-cancelled">Cancelled</span>';
+                }
+                
+                let paymentBadge = '';
+                if (order.paymentStatus === 'paid') {
+                    paymentBadge = '<span class="status-badge status-paid">Paid</span>';
+                } else {
+                    paymentBadge = '<span class="status-badge status-active">Pending</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${order.title}</td>
+                    <td>${order.client}</td>
+                    <td>${order.pages}</td>
+                    <td>$${order.amount.toFixed(2)}</td>
+                    <td>${completedDate ? completedDate.toLocaleDateString() : 'N/A'}</td>
+                    <td>${statusBadge}</td>
+                    <td>${paymentBadge}</td>
+                    <td>${ratingStars}</td>
+                    <td>${order.review || 'No review yet'}</td>
+                    <td class="action-buttons">
+                        ${currentUser.role === 'admin' && order.status === 'completed' && !order.rating ? 
+                            `<button class="action-btn btn-primary" onclick="rateOrder(${order.id})">Rate</button>` : 
+                         ''}
+                        ${currentUser.role === 'admin' && order.status === 'completed' && order.paymentStatus === 'pending' ? 
+                            `<button class="action-btn btn-primary" onclick="markOrderPaid(${order.id})">Mark Paid</button>` : 
+                         ''}
+                        ${order.paymentStatus === 'paid' ? 
+                            `<button class="action-btn btn-info" onclick="downloadInvoice(${order.id})">Invoice</button>` : 
+                         ''}
+                        ${currentUser.role === 'admin' ? 
+                            `<button class="action-btn btn-danger" onclick="deleteOrder(${order.id})">Delete</button>` : 
+                         ''}
+                    </td>
+                `;
+                
+                completedOrdersTable.appendChild(row);
+            });
+        }
+
+        // View order details
+        function viewOrderDetails(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            currentOrderDetails = order;
+            
+            document.getElementById('orderDetailsTitle').textContent = `Order Details: ${order.title}`;
+            
+            const writer = users.find(u => u.id === order.writerId);
+            const writerName = writer ? writer.name : 'Unassigned';
+            
+            let statusBadge = '';
+            if (order.status === 'active') {
+                statusBadge = '<span class="status-badge status-active">Active</span>';
+            } else if (order.status === 'completed') {
+                statusBadge = '<span class="status-badge status-completed">Completed</span>';
+            } else if (order.status === 'revision') {
+                statusBadge = '<span class="status-badge status-revision">Revision</span>';
+            } else if (order.status === 'submitted') {
+                statusBadge = '<span class="status-badge status-submitted">Submitted</span>';
+            } else if (order.status === 'cancelled') {
+                statusBadge = '<span class="status-badge status-cancelled">Cancelled</span>';
+            }
+            
+            let paymentBadge = '';
+            if (order.paymentStatus === 'paid') {
+                paymentBadge = '<span class="status-badge status-paid">Paid</span>';
+            } else {
+                paymentBadge = '<span class="status-badge status-active">Pending</span>';
+            }
+            
+            document.getElementById('orderDetailsContent').innerHTML = `
+                <div class="form-group">
+                    <label>Order Title</label>
+                    <input type="text" class="form-control" value="${order.title}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Client</label>
+                    <input type="text" class="form-control" value="${order.client}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Pages</label>
+                    <input type="text" class="form-control" value="${order.pages}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="text" class="form-control" value="$${order.amount.toFixed(2)}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Assigned Date</label>
+                    <input type="text" class="form-control" value="${new Date(order.assignedDate).toLocaleDateString()}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="text" class="form-control" value="${new Date(order.deadline).toLocaleDateString()}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Assigned Writer</label>
+                    <input type="text" class="form-control" value="${writerName}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <div>${statusBadge}</div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Status</label>
+                    <div>${paymentBadge}</div>
+                </div>
+                <div class="form-group">
+                    <label>Instructions</label>
+                    <div class="order-details">
+                        <p>${order.instructions || 'No specific instructions provided.'}</p>
+                    </div>
+                </div>
+                ${order.completedDate ? `
+                <div class="form-group">
+                    <label>Completed Date</label>
+                    <input type="text" class="form-control" value="${new Date(order.completedDate).toLocaleDateString()}" readonly>
+                </div>
+                ` : ''}
+                ${order.rating ? `
+                <div class="form-group">
+                    <label>Rating</label>
+                    <input type="text" class="form-control" value="${'★'.repeat(order.rating)}" readonly>
+                </div>
+                ` : ''}
+                ${order.review ? `
+                <div class="form-group">
+                    <label>Review</label>
+                    <textarea class="form-control" readonly>${order.review}</textarea>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('orderDetailsModal').style.display = 'flex';
+        }
+
+        // Add new order (Admin only)
+        function addNewOrder() {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can add orders');
+                return;
+            }
+            
+            const title = document.getElementById('orderTitle').value;
+            const client = document.getElementById('clientName').value;
+            const pages = parseInt(document.getElementById('pages').value);
+            const amount = parseFloat(document.getElementById('amount').value);
+            const deadline = document.getElementById('deadline').value;
+            const writerId = parseInt(document.getElementById('writerSelect').value);
+            const instructions = document.getElementById('instructions').value;
+            
+            // Validate inputs
+            if (!title || !client || !pages || !amount || !deadline || !writerId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create new order
+            const newOrder = {
+                id: orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1,
+                title,
+                client,
+                pages,
+                amount,
+                assignedDate: new Date().toISOString().split('T')[0],
+                deadline,
+                status: 'active',
+                paymentStatus: 'pending',
+                writerId,
+                instructions
+            };
+            
+            orders.push(newOrder);
+            localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+            
+            // Reset form
+            document.getElementById('addOrderForm').reset();
+            
+            alert('Order added successfully!');
+            
+            // Update the active orders view
+            updateDashboard();
+            loadActiveOrders();
+        }
+
+        // Submit order (Writer only)
+        function submitOrder(orderId) {
+            if (currentUser.role !== 'writer') {
+                alert('Only writers can submit orders');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = 'submitted';
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order submitted for review!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+            }
+        }
+
+        // Mark order as complete (Admin only)
+        function markOrderComplete(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can mark orders as complete');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = 'completed';
+                orders[orderIndex].completedDate = new Date().toISOString().split('T')[0];
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order marked as completed!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+                loadCompletedOrders();
+            }
+        }
+
+        // Mark order as needing revision (Admin only)
+        function markOrderRevision(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can mark orders for revision');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = 'revision';
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order marked for revision!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+            }
+        }
+
+        // Mark order as cancelled (Admin only)
+        function markOrderCancelled(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can cancel orders');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = 'cancelled';
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order cancelled!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+                loadCompletedOrders();
+            }
+        }
+
+        // Mark order as paid (Admin only)
+        function markOrderPaid(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can mark orders as paid');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].paymentStatus = 'paid';
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order marked as paid!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+                loadCompletedOrders();
+            }
+        }
+
+        // Delete order (Admin only)
+        function deleteOrder(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can delete orders');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+                orders = orders.filter(order => order.id !== orderId);
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                alert('Order deleted successfully!');
+                
+                // Update views
+                updateDashboard();
+                loadActiveOrders();
+                loadCompletedOrders();
+            }
+        }
+
+        // Rate a completed order (Admin only)
+        function rateOrder(orderId) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can rate orders');
+                return;
+            }
+            
+            currentOrderToRate = orderId;
+            document.getElementById('ratingModal').style.display = 'flex';
+            
+            // Reset form
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.checked = false;
+            });
+            document.getElementById('reviewText').value = '';
+        }
+
+        // Submit rating for an order
+        function submitRating() {
+            const rating = document.querySelector('input[name="rating"]:checked');
+            const review = document.getElementById('reviewText').value;
+            
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            const orderIndex = orders.findIndex(order => order.id === currentOrderToRate);
+            if (orderIndex !== -1) {
+                orders[orderIndex].rating = parseInt(rating.value);
+                orders[orderIndex].review = review;
+                localStorage.setItem('essayCenterOrders', JSON.stringify(orders));
+                
+                document.getElementById('ratingModal').style.display = 'none';
+                alert('Rating submitted successfully!');
+                
+                // Update completed orders view
+                loadCompletedOrders();
+            }
+        }
+
+        // Download invoice
+        function downloadInvoice(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            const writer = users.find(u => u.id === order.writerId);
+            const writerName = writer ? writer.name : 'Unknown Writer';
+            
+            // Create invoice content
+            const invoiceContent = `
+                Essay Center - Invoice
+                ======================
+                
+                Order ID: ${order.id}
+                Order Title: ${order.title}
+                Client: ${order.client}
+                Writer: ${writerName}
+                
+                Details:
+                - Pages: ${order.pages}
+                - Amount: $${order.amount.toFixed(2)}
+                - Completed Date: ${order.completedDate ? new Date(order.completedDate).toLocaleDateString() : 'N/A'}
+                - Payment Status: ${order.paymentStatus}
+                
+                Thank you for your business!
+            `;
+            
+            // Create a blob and download link
+            const blob = new Blob([invoiceContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `invoice-order-${order.id}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Invoice downloaded successfully!');
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('essayCenterCurrentUser');
+            
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            
+            // Reset login forms
+            document.getElementById('writerLoginForm').reset();
+            document.getElementById('adminLoginForm').reset();
+            showLoginForm('writer');
+        }
+    </script>
+</body>
+</html>
